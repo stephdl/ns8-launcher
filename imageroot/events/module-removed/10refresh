@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Traefik deletes the routes of a removed module without firing
+# hosts-changed, so the list must be refreshed here too. The admin
+# settings of the removed apps are forgotten.
+
+import json
+import os
+import sys
+
+import agent
+
+event = json.load(sys.stdin)
+removed = event.get("module", "")
+
+try:
+    with open("launcher/apps.json") as fp:
+        apps = json.load(fp).get("apps", [])
+    with open("launcher/settings.json") as fp:
+        settings = json.load(fp)
+except (FileNotFoundError, json.JSONDecodeError):
+    apps, settings = [], None
+
+stale = {app["id"] for app in apps if app.get("module") == removed}
+if settings and stale.intersection(settings.get("apps", {})):
+    settings["apps"] = {aid: value for aid, value in settings["apps"].items() if aid not in stale}
+    with open("launcher/settings.json.tmp", "w") as fp:
+        json.dump(settings, fp, indent=2)
+    os.replace("launcher/settings.json.tmp", "launcher/settings.json")
+    print(f"Removed settings of {sorted(stale)}", file=sys.stderr)
+
+agent.run_helper("systemctl", "--user", "--no-block", "start", "launcher-refresh.service")

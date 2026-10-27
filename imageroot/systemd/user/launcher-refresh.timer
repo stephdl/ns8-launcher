@@ -1,0 +1,17 @@
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Catch-up for route changes missed while the module was stopped:
+# hosts-changed and module-removed events trigger the refresh otherwise.
+[Unit]
+Description=Hourly refresh of the launcher application list
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=1h
+RandomizedDelaySec=5min
+
+[Install]
+WantedBy=timers.target

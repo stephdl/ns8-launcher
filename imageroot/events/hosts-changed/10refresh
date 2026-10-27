@@ -1,0 +1,12 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Traefik fires this event when the host names of its routes change
+# (set-route and delete-route), on any node of the cluster.
+
+exec 1>&2
+systemctl --user --no-block start launcher-refresh.service
