@@ -9,4 +9,5 @@
 # (set-route and delete-route), on any node of the cluster.
 
 exec 1>&2
-systemctl --user --no-block start launcher-refresh.service
+# restart, not start: a run already in progress may have read the routes before this change
+systemctl --user --no-block restart launcher-refresh.service

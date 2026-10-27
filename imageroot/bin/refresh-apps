@@ -46,11 +46,16 @@ def fetch_logo(image, url):
         return "/logos/" + filename
     if not url.startswith("https://"):
         return ""
+    # Offline nodes would wait for the timeout on every run: retry once a day
+    failed = path + ".failed"
+    if os.path.isfile(failed) and time.time() - os.path.getmtime(failed) < 86400:
+        return ""
     try:
         with urllib.request.urlopen(url, timeout=10) as response:
             data = response.read(1024 * 1024)
     except Exception as ex:
         print(agent.SD_WARNING + f"Cannot download logo {url}: {ex}", file=sys.stderr)
+        open(failed, "w").close()
         return ""
     if not data.startswith(b"\x89PNG"):
         return ""

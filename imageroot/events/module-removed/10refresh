@@ -18,15 +18,21 @@ import agent
 event = json.load(sys.stdin)
 removed = event.get("module", "")
 
-try:
-    with open("launcher/apps.json") as fp:
-        apps = json.load(fp).get("apps", [])
-    with open("launcher/settings.json") as fp:
-        settings = json.load(fp)
-except (FileNotFoundError, json.JSONDecodeError):
-    apps, settings = [], None
+def read_json(path, default):
+    try:
+        with open(path) as fp:
+            return json.load(fp)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return default
 
+
+apps = read_json("launcher/apps.json", {}).get("apps", [])
+settings = read_json("launcher/settings.json", None)
+
+# A refresh may have dropped the routes already: also match route names like <module>-<name>
 stale = {app["id"] for app in apps if app.get("module") == removed}
+stale.update(aid for aid in (settings or {}).get("apps", {})
+             if removed and (aid == removed or aid.startswith((removed + "-", removed + "_"))))
 if settings and stale.intersection(settings.get("apps", {})):
     settings["apps"] = {aid: value for aid, value in settings["apps"].items() if aid not in stale}
     with open("launcher/settings.json.tmp", "w") as fp:
@@ -34,4 +40,4 @@ if settings and stale.intersection(settings.get("apps", {})):
     os.replace("launcher/settings.json.tmp", "launcher/settings.json")
     print(f"Removed settings of {sorted(stale)}", file=sys.stderr)
 
-agent.run_helper("systemctl", "--user", "--no-block", "start", "launcher-refresh.service")
+agent.run_helper("systemctl", "--user", "--no-block", "restart", "launcher-refresh.service")

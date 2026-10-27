@@ -11,4 +11,5 @@ exec 1>&2
 systemctl --user enable launcher.service
 systemctl --user restart launcher.service
 systemctl --user enable --now launcher-refresh.timer
-systemctl --user start launcher-refresh.service
+# Logo downloads can be slow without Internet: do not hold the configuration
+systemctl --user --no-block restart launcher-refresh.service
