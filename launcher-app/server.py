@@ -74,7 +74,7 @@ def read_json(name, default):
     try:
         with open(os.path.join(DATA_DIR, name)) as fp:
             return json.load(fp)
-    except (FileNotFoundError, json.JSONDecodeError):
+    except (OSError, ValueError):
         return default
 
 
@@ -118,9 +118,12 @@ def read_session(value):
 def too_many_failures(ip):
     now = time.time()
     with failures_lock:
-        recent = [t for t in failures.get(ip, []) if now - t < FAILURE_WINDOW]
-        failures[ip] = recent
-        return len(recent) >= MAX_FAILURES
+        # Prune every address, or a spread out attack would grow the dict forever
+        for key in list(failures):
+            failures[key] = [t for t in failures[key] if now - t < FAILURE_WINDOW]
+            if not failures[key]:
+                del failures[key]
+        return len(failures.get(ip, [])) >= MAX_FAILURES
 
 
 def record_failure(ip):
@@ -321,11 +324,18 @@ class Handler(BaseHTTPRequestHandler):
         return {"u": uid, "n": display_name, "g": groups, "r": True}
 
     def read_body(self):
-        length = int(self.headers.get("Content-Length", "0") or 0)
-        if length <= 0 or length > 4096:
-            return None
+        """Read the request body, or close the connection when it cannot be
+        read whole: unread bytes would be parsed as the next request."""
         try:
-            return json.loads(self.rfile.read(length))
+            length = int(self.headers.get("Content-Length", "0") or 0)
+        except ValueError:
+            length = -1
+        if self.headers.get("Transfer-Encoding") or length < 0 or length > 4096:
+            self.close_connection = True
+            return None
+        raw = self.rfile.read(length) if length else b""
+        try:
+            return json.loads(raw)
         except ValueError:
             return None
 
@@ -335,13 +345,15 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         self.started = time.monotonic()
         self.renewed_cookie = None
+        self.read_body()
         path = self.path.split("?", 1)[0]
         if path == "/":
             return self.send_file(os.path.join(STATIC_DIR, "index.html"))
         if path == "/api/config":
             return self.api_config()
         if path == "/api/apps":
-            session = self.session()
+            # A leftover cookie of the LDAP mode must not trigger LDAP lookups
+            session = self.session() if AUTH_MODE == "ldap" else None
             if AUTH_MODE == "ldap" and not session:
                 return self.send_json(HTTPStatus.UNAUTHORIZED, {"error": "login_required"})
             return self.send_json(HTTPStatus.OK, visible_apps(session))
@@ -364,9 +376,11 @@ class Handler(BaseHTTPRequestHandler):
     def do_POST(self):
         self.started = time.monotonic()
         self.renewed_cookie = None
+        # Read it before any early answer, so the connection stays in sync
+        body = self.read_body()
         path = self.path.split("?", 1)[0]
         if path == "/api/login":
-            return self.api_login()
+            return self.api_login(body)
         if path == "/api/logout":
             return self.send(HTTPStatus.NO_CONTENT, headers={
                 "Set-Cookie": f"{SESSION_COOKIE}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax"})
@@ -382,7 +396,7 @@ class Handler(BaseHTTPRequestHandler):
             "user": {"name": session["u"], "display_name": session["n"]} if session else None,
         })
 
-    def api_login(self):
+    def api_login(self, body):
         if AUTH_MODE != "ldap":
             return self.send_json(HTTPStatus.NOT_FOUND, {"error": "not_found"})
         ip = self.client_ip()
@@ -390,7 +404,6 @@ class Handler(BaseHTTPRequestHandler):
             log(f"login blocked ip={ip}")
             return self.send_json(HTTPStatus.TOO_MANY_REQUESTS, {"error": "too_many_attempts"},
                                   headers={"Retry-After": str(FAILURE_WINDOW)})
-        body = self.read_body()
         if not isinstance(body, dict) or not isinstance(body.get("username"), str) \
                 or not isinstance(body.get("password"), str):
             return self.send_json(HTTPStatus.BAD_REQUEST, {"error": "bad_request"})
