@@ -2,6 +2,7 @@
 
 const LANGUAGES = { en: "English", fr: "Français", it: "Italiano", de: "Deutsch", es: "Español" };
 const ALL = "\u0000all";
+const RELOAD_INTERVAL = 60 * 1000;
 const $ = (id) => document.getElementById(id);
 
 let messages = {};
@@ -164,6 +165,22 @@ async function showApps() {
   renderApps();
 }
 
+// Apps come and go on the cluster: pick them up without a page reload
+async function reloadApps() {
+  if (document.hidden || $("apps-view").hidden) return;
+  const result = await api("/api/apps");
+  if (result.status === 401) {
+    config.user = null;
+    renderHeader();
+    return showLogin();
+  }
+  if (result.status !== 200 || !result.body) return;
+  // Re-render only on change, so a focused chip or card keeps its focus
+  if (JSON.stringify(result.body) === JSON.stringify(data)) return;
+  data = result.body;
+  renderApps();
+}
+
 function showLogin() {
   $("apps-view").hidden = true;
   $("login-view").hidden = false;
@@ -226,6 +243,8 @@ async function main() {
   $("login-form").addEventListener("submit", login);
   $("logout").addEventListener("click", logout);
   $("toggle-password").addEventListener("click", togglePassword);
+  document.addEventListener("visibilitychange", reloadApps);
+  setInterval(reloadApps, RELOAD_INTERVAL);
 
   await loadLanguage(lang);
   config = (await api("/api/config")).body || {};
