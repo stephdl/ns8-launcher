@@ -1,0 +1,46 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Traefik deletes the routes of a removed module without firing
+# hosts-changed, so the list must be refreshed here too. The admin
+# settings of the removed apps are forgotten.
+
+import json
+import os
+import subprocess
+import sys
+
+import agent
+
+event = json.load(sys.stdin)
+removed = event.get("module", "")
+
+def read_json(path, default):
+    try:
+        with open(path) as fp:
+            return json.load(fp)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return default
+
+
+apps = read_json("launcher/apps.json", {}).get("apps", [])
+settings = read_json("launcher/settings.json", None)
+
+# A refresh may have dropped the routes already: also match route names like <module>-<name>
+stale = {app["id"] for app in apps if app.get("module") == removed}
+stale.update(aid for aid in (settings or {}).get("apps", {})
+             if removed and (aid == removed or aid.startswith((removed + "-", removed + "_"))))
+if settings and stale.intersection(settings.get("apps", {})):
+    settings["apps"] = {aid: value for aid, value in settings["apps"].items() if aid not in stale}
+    with open("launcher/settings.json.tmp", "w") as fp:
+        json.dump(settings, fp, indent=2)
+    os.replace("launcher/settings.json.tmp", "launcher/settings.json")
+    print(f"Removed settings of {sorted(stale)}", file=sys.stderr)
+
+# Traefik drops the routes of the module in its own handler of this event: let it finish
+subprocess.run(["systemd-run", "--user", "--quiet", "--collect", "--unit=launcher-refresh-delay", "--on-active=10s", "--timer-property=AccuracySec=1s",
+                "systemctl", "--user", "restart", "launcher-refresh.service"], check=False)

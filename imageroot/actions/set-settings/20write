@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import base64
+import binascii
+import json
+import os
+import sys
+
+import agent
+
+LOGO_MAX_BYTES = 512 * 1024
+
+data = json.load(sys.stdin)
+os.makedirs("launcher/brand", exist_ok=True)
+
+logo = data.pop("logo", None)
+if logo is not None:
+    if logo == "":
+        image = None
+    else:
+        try:
+            image = base64.b64decode(logo, validate=True)
+        except binascii.Error:
+            image = b""
+        if image.startswith(b"\x89PNG"):
+            extension = "png"
+        elif image.startswith(b"\xff\xd8\xff"):
+            extension = "jpg"
+        else:
+            extension = None
+        if not extension or len(image) > LOGO_MAX_BYTES:
+            agent.set_status('validation-failed')
+            json.dump([{'field': 'logo', 'parameter': 'logo', 'value': '', 'error': 'logo_invalid'}], fp=sys.stdout)
+            sys.exit(2)
+    for name in ("logo.png", "logo.jpg"):
+        try:
+            os.remove(os.path.join("launcher/brand", name))
+        except FileNotFoundError:
+            pass
+    if image:
+        path = f"launcher/brand/logo.{extension}"
+        with open(path + ".tmp", "wb") as fp:
+            fp.write(image)
+        os.replace(path + ".tmp", path)
+
+with open("launcher/settings.json.tmp", "w") as fp:
+    json.dump(data, fp, indent=2)
+os.replace("launcher/settings.json.tmp", "launcher/settings.json")

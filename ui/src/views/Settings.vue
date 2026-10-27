@@ -1,5 +1,5 @@
 <!--
-  Copyright (C) 2022 Nethesis S.r.l.
+  Copyright (C) 2026 Nethesis S.r.l.
   SPDX-License-Identifier: GPL-3.0-or-later
 -->
 <template>
@@ -25,7 +25,7 @@
           <cv-form @submit.prevent="configureModule">
             <cv-text-input
               :label="$t('settings.launcher_fqdn')"
-              placeholder="launcher.example.org"
+              placeholder="home.example.org"
               v-model.trim="host"
               class="mg-bottom"
               :invalid-message="$t(error.host)"
@@ -80,27 +80,40 @@
                 />
               </cv-column>
             </cv-row>
-            <cv-toggle
-              value="httpToHttps"
-              :label="$t('settings.http_to_https')"
-              v-model="isHttpToHttpsEnabled"
-              :disabled="loading.getConfiguration || loading.configureModule"
+            <cv-radio-group
+              :legend="$t('settings.auth_mode')"
+              vertical
               class="mg-bottom"
             >
-              <template slot="text-left">{{
-                $t("settings.disabled")
-              }}</template>
-              <template slot="text-right">{{
-                $t("settings.enabled")
-              }}</template>
-            </cv-toggle>
-            <!-- advanced options -->
-            <cv-accordion ref="accordion" class="maxwidth mg-bottom">
-              <cv-accordion-item :open="toggleAccordion[0]">
-                <template slot="title">{{ $t("settings.advanced") }}</template>
-                <template slot="content"> </template>
-              </cv-accordion-item>
-            </cv-accordion>
+              <cv-radio-button
+                v-model="authMode"
+                name="auth_mode"
+                value="public"
+                :label="$t('settings.auth_mode_public')"
+                :disabled="stillLoading"
+              />
+              <cv-radio-button
+                v-model="authMode"
+                name="auth_mode"
+                value="ldap"
+                :label="$t('settings.auth_mode_ldap')"
+                :disabled="stillLoading"
+              />
+            </cv-radio-group>
+            <NsComboBox
+              v-if="authMode === 'ldap'"
+              v-model="ldapDomain"
+              :options="domainOptions"
+              :title="$t('settings.ldap_domain')"
+              :label="$t('settings.choose_ldap_domain')"
+              :invalid-message="error.ldap_domain"
+              :helper-text="$t('settings.ldap_domain_helper')"
+              :disabled="stillLoading"
+              auto-filter
+              auto-highlight
+              class="mg-bottom maxwidth"
+              ref="ldap_domain"
+            />
             <cv-row v-if="error.configureModule">
               <cv-column>
                 <NsInlineNotification
@@ -191,7 +204,9 @@ export default {
       host: "",
       isLetsEncryptEnabled: false,
       isLetsEncryptCurrentlyEnabled: false,
-      isHttpToHttpsEnabled: true,
+      authMode: "public",
+      ldapDomain: "",
+      ldapDomainList: [],
       loading: {
         getConfiguration: false,
         configureModule: false,
@@ -202,13 +217,17 @@ export default {
         configureModule: "",
         host: "",
         lets_encrypt: "",
-        http2https: "",
+        auth_mode: "",
+        ldap_domain: "",
         getStatus: "",
       },
     };
   },
   computed: {
     ...mapState(["instanceName", "core", "appName"]),
+    domainOptions() {
+      return this.ldapDomainList.map((domain) => ({ name: domain, label: domain, value: domain }));
+    },
     stillLoading() {
       return (
         this.loading.getConfiguration ||
@@ -324,7 +343,9 @@ export default {
       this.host = config.host;
       this.isLetsEncryptEnabled = config.lets_encrypt;
       this.isLetsEncryptCurrentlyEnabled = config.lets_encrypt;
-      this.isHttpToHttpsEnabled = config.http2https;
+      this.authMode = config.auth_mode;
+      this.ldapDomain = config.ldap_domain;
+      this.ldapDomainList = config.ldap_domain_list;
 
       this.loading.getConfiguration = false;
       this.focusElement("host");
@@ -338,6 +359,13 @@ export default {
 
         if (isValidationOk) {
           this.focusElement("host");
+        }
+        isValidationOk = false;
+      }
+      if (this.authMode === "ldap" && !this.ldapDomain) {
+        this.error.ldap_domain = this.$t("common.required");
+        if (isValidationOk) {
+          this.focusElement("ldap_domain");
         }
         isValidationOk = false;
       }
@@ -364,8 +392,6 @@ export default {
       }
     },
     async configureModule() {
-      this.error.test_imap = false;
-      this.error.test_smtp = false;
       const isValidationOk = this.validateConfigureModule();
       if (!isValidationOk) {
         return;
@@ -398,7 +424,8 @@ export default {
           data: {
             host: this.host,
             lets_encrypt: this.isLetsEncryptEnabled,
-            http2https: this.isHttpToHttpsEnabled,
+            auth_mode: this.authMode,
+            ldap_domain: this.authMode === "ldap" ? this.ldapDomain : "",
           },
           extra: {
             title: this.$t("settings.instance_configuration", {

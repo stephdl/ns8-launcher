@@ -1,37 +1,34 @@
 #!/usr/bin/env python3
 
 #
-# Copyright (C) 2022 Nethesis S.r.l.
+# Copyright (C) 2026 Nethesis S.r.l.
 # SPDX-License-Identifier: GPL-3.0-or-later
 #
 
 import json
+import os
+import secrets
 import sys
+
 import agent
 
-# Try to parse the stdin as JSON.
-# If parsing fails, output everything to stderr
 data = json.load(sys.stdin)
-host = data["host"]
-h2hs = data.get("http2https", True)
-agent.set_env("TRAEFIK_HOST", host)
-agent.set_env("TRAEFIK_HTTP2HTTPS", h2hs)
+ldap_domain = data["ldap_domain"] if data["auth_mode"] == "ldap" else ""
 
-#This is specific to you module, so you need to change it accordingly.
-# we read a json stdin {"vars1":true, "var2":"foo", "vars3": 3} and we writ it to .config/state/environment
-# Upper case to set environment variable and minor case to read from stdin
+# A user name means someone else in another domain: drop the sessions when it changes
+access_changed = (os.environ.get("AUTH_MODE"), os.environ.get("LDAP_DOMAIN", "")) != (data["auth_mode"], ldap_domain)
 
-# this values must exists in the json stdin
-# agent.set_env("MAIL_SERVER", data["mail_server"])
-# agent.set_env("LDAP_DOMAIN", data["ldap_domain"])
+agent.set_env("TRAEFIK_HOST", data["host"])
+agent.set_env("AUTH_MODE", data["auth_mode"])
+agent.set_env("LDAP_DOMAIN", ldap_domain)
+agent.bind_user_domains([ldap_domain] if ldap_domain else [])
 
-# you can add default values for the following variables
-# agent.set_env("MAIL_DOMAIN",data.get("mail_domain",""))
-# agent.set_env("WOWORKERSCOUNT",data.get("workers_count",3))
-# agent.set_env("AUXILIARYACCOUNT",data.get("auxiliary_account",True))
-# agent.set_env("ACTIVESYNC",data.get("activesync",False))
+# Session cookies are signed with this key: keep it out of Redis, which every module can read
+if access_changed or not os.path.isfile("session.env"):
+    with open("session.env.tmp", "w") as fp:
+        os.fchmod(fp.fileno(), 0o600)
+        print(f"SESSION_SECRET={secrets.token_hex(32)}", file=fp)
+    os.replace("session.env.tmp", "session.env")
 
-
-# Make sure everything is saved inside the environment file
-# just before starting systemd unit
-#agent.dump_env()
+os.makedirs("launcher/logos", exist_ok=True)
+os.makedirs("launcher/brand", exist_ok=True)

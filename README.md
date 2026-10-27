@@ -1,171 +1,102 @@
 # ns8-launcher
 
-This is a template module for [NethServer 8](https://github.com/NethServer/ns8-core).
-To start a new module from it:
+A home page for a [NethServer 8](https://github.com/NethServer/ns8-core) cluster.
+It lists every application published with a host name on any node, with its
+name and logo, plus external links and support contacts.
 
-1. Click on [Use this template](https://github.com/NethServer/ns8-launcher/generate).
-   Name your repo with `ns8-` prefix (e.g. `ns8-mymodule`). 
-   Do not end your module name with a number, like ~~`ns8-baaad2`~~!
+The page works in two modes:
 
-1. Clone the repository, enter the cloned directory and
-   [configure your GIT identity](https://git-scm.com/book/en/v2/Getting-Started-First-Time-Git-Setup#_your_identity)
+- `public`: no login, every application is visible.
+- `ldap`: users of a user domain log in first. Each application can be
+  restricted to some LDAP groups; an application with no group is visible to
+  every logged in user. Anonymous visitors see only the login form.
 
-1. Rename some references inside the repo:
-   ```
-   modulename=$(basename $(pwd) | sed 's/^ns8-//') &&
-   git mv imageroot/systemd/user/launcher.service imageroot/systemd/user/${modulename}.service &&
-   git mv imageroot/systemd/user/launcher-app.service imageroot/systemd/user/${modulename}-app.service && 
-   git mv tests/launcher.robot tests/${modulename}.robot &&
-   sed -i "s/launcher/${modulename}/g" $(find .github/ * -type f) &&
-   git commit -a -m "Repository initialization"
-   ```
+A login lasts 8 hours, or until the browser closes. With "Keep me logged in"
+it lasts 7 days and each visit extends it; the account and its groups are then
+read again from LDAP at most once an hour, so a locked or removed account loses
+its session.
 
-1. Edit this `README.md` file, by replacing this section with your module
-   description
-
-1. Adjust `.github/workflows` to your needs. `clean-registry.yml` might
-   need the proper list of image names to work correctly. Unused workflows
-   can be disabled from the GitHub Actions interface.
-
-1. Commit and push your local changes
+The page is always served over HTTPS. Let's Encrypt is optional. Clone, move and
+restore turn it off, because the new host may not reach the Internet: enable it
+again from the Settings page.
 
 ## Install
 
-Instantiate the module with:
+    add-module ghcr.io/stephdl/launcher:latest 1
 
-    add-module ghcr.io/nethserver/launcher:latest 1
-
-The output of the command will return the instance name.
-Output example:
-
-    {"module_id": "launcher1", "image_name": "launcher", "image_url": "ghcr.io/nethserver/launcher:latest"}
+The output returns the instance name, like `launcher1`.
 
 ## Configure
 
-Let's assume that the mattermost instance is named `launcher1`.
+    api-cli run configure-module --agent module/launcher1 --data - <<EOF
+    {
+      "host": "home.example.org",
+      "lets_encrypt": true,
+      "auth_mode": "ldap",
+      "ldap_domain": "example.org"
+    }
+    EOF
 
-Launch `configure-module`, by setting the following parameters:
-- `host`: a fully qualified domain name for the application
-- `http2https`: enable or disable HTTP to HTTPS redirection (true/false)
-- `lets_encrypt`: enable or disable Let's Encrypt certificate (true/false)
+`auth_mode` is `public` or `ldap`. `ldap_domain` is required in `ldap` mode.
 
+The page content is set with `set-settings` and read with `get-settings`:
+welcome sentence, logo (base64 PNG or JPEG, 512 KB at most), support contacts,
+categories, external links, and per-application overrides (hidden, name,
+category, groups). The NS8 admin UI of the module covers all of it.
 
-Example:
+## How the application list is built
 
-```
-api-cli run configure-module --agent module/launcher1 --data - <<EOF
-{
-  "host": "launcher.domain.com",
-  "http2https": true,
-  "lets_encrypt": false
-}
-EOF
-```
+`bin/refresh-apps` calls `list-routes` on every Traefik instance of the
+cluster and keeps the routes that have a host name. The display name comes
+from the instance label, then from the repository metadata; the logo from the
+repository metadata, cached locally. The result is `state/launcher/apps.json`.
 
-The above command will:
-- start and configure the launcher instance
-- configure a virtual host for trafik to access the instance
+The list is refreshed:
 
-## Get the configuration
-You can retrieve the configuration with
+- on `hosts-changed`, fired by Traefik when the host names of its routes change;
+- on `module-removed`, because Traefik drops the routes of a removed module
+  without firing `hosts-changed`. The overrides of the removed apps are deleted;
+- every hour, to catch events missed while the module was stopped;
+- on demand, with the `refresh-apps` action (the Refresh button of the Apps page).
 
-```
-api-cli run get-configuration --agent module/launcher1
-```
+The module needs `traefik@any:routeadm` to read the routes of every node,
+`cluster:reader` to read the repository metadata, and `cluster:accountconsumer`
+to bind the user domain.
+
+## Logs and CrowdSec
+
+The container logs to journald with the `launcher` tag. Each request is logged
+with the client address and the status code, like
+`192.0.2.10 "POST /api/login" 401 18ms`. A login also logs
+`login failed user='alice' ip=192.0.2.10` or
+`login ok user='alice' ip=192.0.2.10 remember=False`, and a kept session of a
+locked or removed account logs `session revoked user='alice' ip=192.0.2.10`.
+
+Status codes are exact: 401 for a failed login or a missing session, 429 when
+an address made 10 failed logins in 15 minutes, 404 for unknown paths.
+Traefik logs the same requests, so the CrowdSec `http-generic-401-bf` scenario
+bans an address after 5 failed logins in a row.
 
 ## Uninstall
 
-To uninstall the instance:
-
     remove-module --no-preserve launcher1
-
-## Smarthost setting discovery
-
-Some configuration settings, like the smarthost setup, are not part of the
-`configure-module` action input: they are discovered by looking at some
-Redis keys.  To ensure the module is always up-to-date with the
-centralized [smarthost
-setup](https://nethserver.github.io/ns8-core/core/smarthost/) every time
-launcher starts, the command `bin/discover-smarthost` runs and refreshes
-the `state/smarthost.env` file with fresh values from Redis.
-
-Furthermore if smarthost setup is changed when launcher is already
-running, the event handler `events/smarthost-changed/10reload_services`
-restarts the main module service.
-
-See also the `systemd/user/launcher.service` file.
-
-This setting discovery is just an example to understand how the module is
-expected to work: it can be rewritten or discarded completely.
 
 ## Debug
 
-some CLI are needed to debug
+    runagent -m launcher1 env
+    runagent -m launcher1 systemctl --user status launcher.service launcher-refresh.timer
+    journalctl -t launcher -t launcher-refresh
+    runagent -m launcher1 cat launcher/apps.json
 
-- The module runs under an agent that initiate a lot of environment variables (in /home/launcher1/.config/state), it could be nice to verify them
-on the root terminal
-
-    `runagent -m launcher1 env`
-
-- you can become runagent for testing scripts and initiate all environment variables
-  
-    `runagent -m launcher1`
-
- the path become : 
-```
-    echo $PATH
-    /home/launcher1/.config/bin:/usr/local/agent/pyenv/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/usr/
-```
-
-- if you want to debug a container or see environment inside
- `runagent -m launcher1`
- ```
-podman ps
-CONTAINER ID  IMAGE                                      COMMAND               CREATED        STATUS        PORTS                    NAMES
-d292c6ff28e9  localhost/podman-pause:4.6.1-1702418000                          9 minutes ago  Up 9 minutes  127.0.0.1:20015->80/tcp  80b8de25945f-infra
-d8df02bf6f4a  docker.io/library/mariadb:10.11.5          --character-set-s...  9 minutes ago  Up 9 minutes  127.0.0.1:20015->80/tcp  mariadb-app
-9e58e5bd676f  docker.io/library/nginx:stable-alpine3.17  nginx -g daemon o...  9 minutes ago  Up 9 minutes  127.0.0.1:20015->80/tcp  launcher-app
-```
-
-you can see what environment variable is inside the container
-```
-podman exec  launcher-app env
-PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
-TERM=xterm
-PKG_RELEASE=1
-MARIADB_DB_HOST=127.0.0.1
-MARIADB_DB_NAME=launcher
-MARIADB_IMAGE=docker.io/mariadb:10.11.5
-MARIADB_DB_TYPE=mysql
-container=podman
-NGINX_VERSION=1.24.0
-NJS_VERSION=0.7.12
-MARIADB_DB_USER=launcher
-MARIADB_DB_PASSWORD=launcher
-MARIADB_DB_PORT=3306
-HOME=/root
-```
-
-you can run a shell inside the container
-
-```
-podman exec -ti   launcher-app sh
-/ # 
-```
 ## Testing
 
 Test the module using the `test-module.sh` script:
 
+    ./test-module.sh <NODE_ADDR> ghcr.io/stephdl/launcher:latest
 
-    ./test-module.sh <NODE_ADDR> ghcr.io/nethserver/launcher:latest
-
-The tests are made using [Robot Framework](https://robotframework.org/)
+The tests are made using [Robot Framework](https://robotframework.org/).
+Cases tagged `ui` take screenshots of the admin pages and of the launcher page.
 
 ## UI translation
 
 Translated with [Weblate](https://hosted.weblate.org/projects/ns8/).
-
-To setup the translation process:
-
-- add [GitHub Weblate app](https://docs.weblate.org/en/latest/admin/continuous.html#github-setup) to your repository
-- add your repository to [hosted.weblate.org]((https://hosted.weblate.org) or ask a NethServer developer to add it to ns8 Weblate project

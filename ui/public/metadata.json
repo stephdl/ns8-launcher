@@ -1,19 +1,23 @@
 {
-  "name": "launcher",
+  "name": "Launcher",
   "description": {
-    "en": "My launcher module"
+    "en": "A home page listing every application published on the cluster, public or behind an LDAP login",
+    "fr": "Une page d'accueil qui liste toutes les applications publiées sur le cluster, publique ou derrière un login LDAP",
+    "it": "Una home page con tutte le applicazioni pubblicate sul cluster, pubblica o protetta da login LDAP"
   },
-  "categories": [],
+  "categories": [
+    "web"
+  ],
   "authors": [
     {
-      "name": "Name Surname",
-      "email": "author@yourmail.org"
+      "name": "Stephane de Labrusse",
+      "email": "stephdl@de-labrusse.fr"
     }
   ],
   "docs": {
-    "documentation_url": "https://docs.launcher.com/",
-    "bug_url": "https://github.com/NethServer/dev",
-    "code_url": "https://github.com/author/ns8-launcher"
+    "documentation_url": "https://github.com/stephdl/ns8-launcher",
+    "bug_url": "https://github.com/stephdl/dev/issues",
+    "code_url": "https://github.com/stephdl/ns8-launcher"
   },
-  "source": "ghcr.io/nethserver/launcher"
+  "source": "ghcr.io/stephdl/launcher"
 }

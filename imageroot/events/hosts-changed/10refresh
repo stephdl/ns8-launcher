@@ -1,0 +1,15 @@
+#!/bin/bash
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+# Traefik fires this event when the host names of its routes change
+# (set-route and delete-route), on any node of the cluster.
+
+exec 1>&2
+# Traefik fires the event before it loads the new route file, so wait for it.
+# A pending refresh already covers this change: then systemd-run fails, ignore it.
+systemd-run --user --quiet --collect --unit=launcher-refresh-delay --on-active=10s --timer-property=AccuracySec=1s \
+    systemctl --user restart launcher-refresh.service || :
