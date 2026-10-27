@@ -9,5 +9,7 @@
 # (set-route and delete-route), on any node of the cluster.
 
 exec 1>&2
-# restart, not start: a run already in progress may have read the routes before this change
-systemctl --user --no-block restart launcher-refresh.service
+# Traefik fires the event before it loads the new route file, so wait for it.
+# A pending refresh already covers this change: then systemd-run fails, ignore it.
+systemd-run --user --quiet --collect --unit=launcher-refresh-delay --on-active=10s --timer-property=AccuracySec=1s \
+    systemctl --user restart launcher-refresh.service || :

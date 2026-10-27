@@ -11,6 +11,7 @@
 
 import json
 import os
+import subprocess
 import sys
 
 import agent
@@ -40,4 +41,6 @@ if settings and stale.intersection(settings.get("apps", {})):
     os.replace("launcher/settings.json.tmp", "launcher/settings.json")
     print(f"Removed settings of {sorted(stale)}", file=sys.stderr)
 
-agent.run_helper("systemctl", "--user", "--no-block", "restart", "launcher-refresh.service")
+# Traefik drops the routes of the module in its own handler of this event: let it finish
+subprocess.run(["systemd-run", "--user", "--quiet", "--collect", "--unit=launcher-refresh-delay", "--on-active=10s", "--timer-property=AccuracySec=1s",
+                "systemctl", "--user", "restart", "launcher-refresh.service"], check=False)
