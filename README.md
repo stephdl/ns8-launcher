@@ -11,6 +11,11 @@ The page works in two modes:
   restricted to some LDAP groups; an application with no group is visible to
   every logged in user. Anonymous visitors see only the login form.
 
+A login lasts 8 hours, or until the browser closes. With "Keep me logged in"
+it lasts 7 days and each visit extends it; the account and its groups are then
+read again from LDAP at most once an hour, so a locked or removed account loses
+its session.
+
 The page is always served over HTTPS. Let's Encrypt is optional. Clone, move and
 restore turn it off, because the new host may not reach the Internet: enable it
 again from the Settings page.

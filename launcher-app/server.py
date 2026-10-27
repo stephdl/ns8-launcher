@@ -30,6 +30,11 @@ AUTH_MODE = os.environ.get("AUTH_MODE", "public")
 SESSION_SECRET = os.environ.get("SESSION_SECRET", "").encode()
 SESSION_COOKIE = "launcher_session"
 SESSION_TTL = 8 * 3600
+# "Keep me logged in": each visit pushes the expiry back by REMEMBER_TTL
+REMEMBER_TTL = 7 * 24 * 3600
+# A remembered session reads the account and its groups again from LDAP at
+# most this often, so a locked account or a removed group takes effect soon.
+RECHECK_INTERVAL = 3600
 
 LDAP_HOST = os.environ.get("LDAP_HOST", "")
 LDAP_PORT = int(os.environ.get("LDAP_PORT", "0") or 0)
@@ -77,10 +82,22 @@ def sign(payload):
     return hmac.new(SESSION_SECRET, payload, hashlib.sha256).hexdigest()
 
 
-def make_session(user, display_name, groups):
-    payload = json.dumps({"u": user, "n": display_name, "g": groups, "e": int(time.time()) + SESSION_TTL}).encode()
+def make_session(user, display_name, groups, remember):
+    now = int(time.time())
+    payload = json.dumps({
+        "u": user, "n": display_name, "g": groups, "r": remember, "c": now,
+        "e": now + (REMEMBER_TTL if remember else SESSION_TTL),
+    }).encode()
     data = base64.urlsafe_b64encode(payload).decode().rstrip("=")
     return data + "." + sign(data.encode())
+
+
+def session_cookie(user, display_name, groups, remember):
+    value = make_session(user, display_name, groups, remember)
+    # Without "keep me logged in" the cookie dies with the browser, and the
+    # server still refuses it after SESSION_TTL
+    max_age = f"Max-Age={REMEMBER_TTL}; " if remember else ""
+    return f"{SESSION_COOKIE}={value}; Path=/; {max_age}HttpOnly; Secure; SameSite=Lax"
 
 
 def read_session(value):
@@ -122,6 +139,38 @@ def ldap_connection(user=None, password=None):
                             raise_exceptions=True, receive_timeout=10, read_only=True)
 
 
+def ldap_find_user(conn, username):
+    """Return (dn, uid, display_name, group_filter, group_attribute), or None
+    when the user does not exist or is locked."""
+    if LDAP_SCHEMA == "ad":
+        user_filter = f"(&(objectClass=user)(objectCategory=person)(sAMAccountName={escape_filter_chars(username)}))"
+        attributes = ["sAMAccountName", "displayName", "userAccountControl"]
+    else:
+        user_filter = f"(&(objectClass=posixAccount)(objectClass=inetOrgPerson)(uid={escape_filter_chars(username)}))"
+        attributes = ["uid", "displayName", "cn", "pwdAccountLockedTime"]
+    conn.search(LDAP_BASE, user_filter, attributes=attributes)
+    if len(conn.entries) != 1:
+        return None
+    entry = conn.entries[0]
+    user_dn = entry.entry_dn
+    if LDAP_SCHEMA == "ad":
+        if int(entry.userAccountControl.value or 0) & 0x2:
+            return None
+        uid = str(entry.sAMAccountName.value)
+        display_name = str(entry.displayName.value or uid)
+        return user_dn, uid, display_name, f"(&(objectClass=group)(member={escape_filter_chars(user_dn)}))", "sAMAccountName"
+    if entry.pwdAccountLockedTime.value:
+        return None
+    uid = str(entry.uid.value)
+    display_name = str(entry.displayName.value or entry.cn.value or uid)
+    return user_dn, uid, display_name, f"(&(objectClass=posixGroup)(memberUid={escape_filter_chars(uid)}))", "cn"
+
+
+def ldap_groups(conn, group_filter, group_attribute):
+    conn.search(LDAP_BASE, group_filter, attributes=[group_attribute])
+    return sorted(str(e[group_attribute].value) for e in conn.entries)
+
+
 def ldap_authenticate(username, password):
     """Return (user, display_name, groups) or None when the credentials are wrong."""
     username = username.strip()
@@ -129,33 +178,11 @@ def ldap_authenticate(username, password):
     if not username or not password or not LDAP_HOST:
         return None
 
-    if LDAP_SCHEMA == "ad":
-        user_filter = f"(&(objectClass=user)(objectCategory=person)(sAMAccountName={escape_filter_chars(username)}))"
-        attributes = ["sAMAccountName", "displayName", "userAccountControl"]
-    else:
-        user_filter = f"(&(objectClass=posixAccount)(objectClass=inetOrgPerson)(uid={escape_filter_chars(username)}))"
-        attributes = ["uid", "displayName", "cn", "pwdAccountLockedTime"]
-
     with ldap_connection(LDAP_BIND_DN, LDAP_BIND_PASSWORD) as conn:
-        conn.search(LDAP_BASE, user_filter, attributes=attributes)
-        if len(conn.entries) != 1:
-            return None
-        entry = conn.entries[0]
-        user_dn = entry.entry_dn
-        if LDAP_SCHEMA == "ad":
-            if int(entry.userAccountControl.value or 0) & 0x2:
-                return None
-            uid = str(entry.sAMAccountName.value)
-            display_name = str(entry.displayName.value or uid)
-            group_filter = f"(&(objectClass=group)(member={escape_filter_chars(user_dn)}))"
-            group_attribute = "sAMAccountName"
-        else:
-            if entry.pwdAccountLockedTime.value:
-                return None
-            uid = str(entry.uid.value)
-            display_name = str(entry.displayName.value or entry.cn.value or uid)
-            group_filter = f"(&(objectClass=posixGroup)(memberUid={escape_filter_chars(uid)}))"
-            group_attribute = "cn"
+        found = ldap_find_user(conn, username)
+    if not found:
+        return None
+    user_dn, uid, display_name, group_filter, group_attribute = found
 
     try:
         ldap_connection(user_dn, password).unbind()
@@ -163,10 +190,19 @@ def ldap_authenticate(username, password):
         return None
 
     with ldap_connection(LDAP_BIND_DN, LDAP_BIND_PASSWORD) as conn:
-        conn.search(LDAP_BASE, group_filter, attributes=[group_attribute])
-        groups = sorted(str(e[group_attribute].value) for e in conn.entries)
-
+        groups = ldap_groups(conn, group_filter, group_attribute)
     return uid, display_name, groups
+
+
+def ldap_refresh(uid):
+    """Read a logged in user again: (uid, display_name, groups), or None when
+    the account is gone or locked."""
+    with ldap_connection(LDAP_BIND_DN, LDAP_BIND_PASSWORD) as conn:
+        found = ldap_find_user(conn, uid)
+        if not found:
+            return None
+        user_dn, uid, display_name, group_filter, group_attribute = found
+        return uid, display_name, ldap_groups(conn, group_filter, group_attribute)
 
 
 def visible_apps(session):
@@ -241,7 +277,10 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Referrer-Policy", "same-origin")
         self.send_header("Content-Security-Policy",
                          "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'self'; frame-ancestors 'none'")
-        for name, value in (headers or {}).items():
+        headers = dict(headers or {})
+        if getattr(self, "renewed_cookie", None) and "Set-Cookie" not in headers:
+            headers["Set-Cookie"] = self.renewed_cookie
+        for name, value in headers.items():
             self.send_header(name, value)
         self.end_headers()
         if self.command != "HEAD":
@@ -258,9 +297,28 @@ class Handler(BaseHTTPRequestHandler):
             self.send(HTTPStatus.OK, fp.read(), content_type)
 
     def session(self):
+        """Return the valid session of the request, or None. A remembered
+        session is checked against LDAP and renewed; the new cookie goes in
+        self.renewed_cookie for the response."""
+        self.renewed_cookie = None
         cookie = SimpleCookie(self.headers.get("Cookie", ""))
         morsel = cookie.get(SESSION_COOKIE)
-        return read_session(morsel.value if morsel else "")
+        session = read_session(morsel.value if morsel else "")
+        if not session or not session.get("r") or time.time() - session.get("c", 0) < RECHECK_INTERVAL:
+            return session
+        try:
+            result = ldap_refresh(session["u"])
+        except ldap3.core.exceptions.LDAPException as ex:
+            # LDAP is down: keep the session as it is and try again next visit
+            log(f"LDAP error: {ex}")
+            return session
+        if not result:
+            log(f"session revoked user={session['u']!r} ip={self.client_ip()}")
+            self.renewed_cookie = f"{SESSION_COOKIE}=; Path=/; Max-Age=0; HttpOnly; Secure; SameSite=Lax"
+            return None
+        uid, display_name, groups = result
+        self.renewed_cookie = session_cookie(uid, display_name, groups, True)
+        return {"u": uid, "n": display_name, "g": groups, "r": True}
 
     def read_body(self):
         length = int(self.headers.get("Content-Length", "0") or 0)
@@ -276,6 +334,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         self.started = time.monotonic()
+        self.renewed_cookie = None
         path = self.path.split("?", 1)[0]
         if path == "/":
             return self.send_file(os.path.join(STATIC_DIR, "index.html"))
@@ -304,6 +363,7 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):
         self.started = time.monotonic()
+        self.renewed_cookie = None
         path = self.path.split("?", 1)[0]
         if path == "/api/login":
             return self.api_login()
@@ -335,6 +395,7 @@ class Handler(BaseHTTPRequestHandler):
                 or not isinstance(body.get("password"), str):
             return self.send_json(HTTPStatus.BAD_REQUEST, {"error": "bad_request"})
         username = body["username"][:256]
+        remember = body.get("remember") is True
         try:
             result = ldap_authenticate(username, body["password"])
         except ldap3.core.exceptions.LDAPException as ex:
@@ -346,11 +407,9 @@ class Handler(BaseHTTPRequestHandler):
             return self.send_json(HTTPStatus.UNAUTHORIZED, {"error": "invalid_credentials"})
         clear_failures(ip)
         uid, display_name, groups = result
-        log(f"login ok user={uid!r} ip={ip}")
-        cookie = f"{SESSION_COOKIE}={make_session(uid, display_name, groups)}; Path=/; " \
-                 f"Max-Age={SESSION_TTL}; HttpOnly; Secure; SameSite=Lax"
+        log(f"login ok user={uid!r} ip={ip} remember={remember}")
         self.send_json(HTTPStatus.OK, {"name": uid, "display_name": display_name},
-                       headers={"Set-Cookie": cookie})
+                       headers={"Set-Cookie": session_cookie(uid, display_name, groups, remember)})
 
 
 if __name__ == "__main__":

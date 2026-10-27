@@ -22,5 +22,6 @@
   "no_apps": "Nessuna applicazione è ancora pubblicata.",
   "no_match": "Nessuna applicazione corrisponde alla ricerca.",
   "show_password": "Mostra password",
-  "hide_password": "Nascondi password"
+  "hide_password": "Nascondi password",
+  "remember": "Resta connesso per 7 giorni"
 }

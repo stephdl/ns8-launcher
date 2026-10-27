@@ -22,5 +22,6 @@
   "no_apps": "Noch ist keine Anwendung veröffentlicht.",
   "no_match": "Keine Anwendung entspricht Ihrer Suche.",
   "show_password": "Passwort anzeigen",
-  "hide_password": "Passwort verbergen"
+  "hide_password": "Passwort verbergen",
+  "remember": "7 Tage angemeldet bleiben"
 }

@@ -111,6 +111,8 @@ main { flex: 1; }
 .reveal .eye-off, .reveal[aria-pressed="true"] .eye { display: none; }
 .reveal[aria-pressed="true"] .eye-off { display: block; }
 .error { margin: 0; color: var(--danger); font-size: 14px; }
+.remember { display: flex; gap: 10px; align-items: center; min-height: 32px; font-size: 14px; color: var(--text-dim); cursor: pointer; }
+.remember input { width: 18px; height: 18px; min-height: 0; margin: 0; accent-color: var(--accent); cursor: pointer; }
 .login .btn.primary { min-height: 44px; }
 
 .apps { padding: 32px 0 44px; }
