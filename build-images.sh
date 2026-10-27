@@ -21,7 +21,7 @@ container=$(buildah from scratch)
 # Reuse existing nodebuilder-launcher container, to speed up builds
 if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-launcher; then
     echo "Pulling NodeJS runtime..."
-    buildah from --name nodebuilder-launcher -v "${PWD}:/usr/src:Z" docker.io/library/node:22.23.4
+    buildah from --name nodebuilder-launcher -v "${PWD}:/usr/src:Z" docker.io/library/node:24.22.1
 fi
 
 echo "Build static UI files with node..."
