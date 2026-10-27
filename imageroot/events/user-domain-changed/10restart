@@ -18,5 +18,8 @@ if not domain or domain not in event.get("domains", [event.get("domain")]):
 if "node_id" in event and str(event["node_id"]) != os.getenv("NODE_ID"):
     sys.exit(0)  # another node's ldapproxy changed
 
+# After a restore the domain may come back after the module: bind it now,
+# the bind done by configure-module failed while the domain was missing.
+agent.bind_user_domains([domain])
 # discover-ldap runs again before the container starts
 agent.run_helper("systemctl", "--user", "-T", "try-restart", "launcher.service").check_returncode()

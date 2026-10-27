@@ -11,7 +11,9 @@ The page works in two modes:
   restricted to some LDAP groups; an application with no group is visible to
   every logged in user. Anonymous visitors see only the login form.
 
-The page is always served over HTTPS. Let's Encrypt is optional.
+The page is always served over HTTPS. Let's Encrypt is optional. Clone, move and
+restore turn it off, because the new host may not reach the Internet: enable it
+again from the Settings page.
 
 ## Install
 

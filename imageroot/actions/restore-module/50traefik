@@ -14,9 +14,11 @@ import agent
 request = json.load(sys.stdin)
 renv = request['environment']
 
+# The new host may not reach the Internet: a failed certificate request would
+# abort the restore, so Let's Encrypt starts disabled and the admin enables it.
 configure_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='configure-module', data={
     "host": renv["TRAEFIK_HOST"],
-    "lets_encrypt": renv.get("TRAEFIK_LETS_ENCRYPT") == "True",
+    "lets_encrypt": False,
     "auth_mode": renv.get("AUTH_MODE") or "public",
     "ldap_domain": renv.get("LDAP_DOMAIN", ""),
 })

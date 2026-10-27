@@ -9,9 +9,11 @@ import os
 
 import agent
 
+# Also runs for move-module. The new host may not reach the Internet: a failed
+# certificate request would abort the clone, so Let's Encrypt starts disabled.
 configure_retval = agent.tasks.run(agent_id=os.environ['AGENT_ID'], action='configure-module', data={
     "host": os.environ["TRAEFIK_HOST"],
-    "lets_encrypt": os.environ.get("TRAEFIK_LETS_ENCRYPT") == "True",
+    "lets_encrypt": False,
     "auth_mode": os.environ.get("AUTH_MODE") or "public",
     "ldap_domain": os.environ.get("LDAP_DOMAIN", ""),
 })
