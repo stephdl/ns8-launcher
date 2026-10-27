@@ -37,7 +37,7 @@
               <div class="logo-row">
                 <img v-if="logoPreview" :src="logoPreview" alt="" class="logo-preview" />
                 <img v-else-if="!logoReset && logoSet" :src="currentLogoUrl" alt="" class="logo-preview" />
-                <img v-else src="../assets/module_default_logo.png" alt="" class="logo-preview" />
+                <img v-else src="../assets/ns8-logo.png" alt="" class="logo-preview" />
                 <div>
                   <cv-file-uploader
                     :key="uploaderKey"
