@@ -136,12 +136,12 @@
             :invalid-message="error.linkUrl"
             class="mg-bottom"
           />
-          <cv-dropdown v-model="editing.category" :label="$t('apps.column_category')" class="mg-bottom">
-            <cv-dropdown-item value="">{{ $t("apps.no_category") }}</cv-dropdown-item>
-            <cv-dropdown-item v-for="category in settings.categories" :key="category" :value="category">{{
+          <cv-select v-model="editing.category" :label="$t('apps.column_category')" class="mg-bottom">
+            <cv-select-option value="">{{ $t("apps.no_category") }}</cv-select-option>
+            <cv-select-option v-for="category in settings.categories" :key="category" :value="category">{{
               category
-            }}</cv-dropdown-item>
-          </cv-dropdown>
+            }}</cv-select-option>
+          </cv-select>
         </cv-form>
       </template>
       <template slot="secondary-button">{{ $t("common.cancel") }}</template>
@@ -253,7 +253,8 @@ export default {
 }
 // Carbon gives dropdowns and text inputs different widths: line them up
 .modal-form .bx--form-item,
-.modal-form .bx--dropdown,
+.modal-form .bx--select-input__wrapper,
+.modal-form .bx--select-input,
 .modal-form .bx--list-box,
 .modal-form .bx--text-input,
 .modal-form .bx--multi-select {

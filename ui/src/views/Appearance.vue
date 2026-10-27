@@ -37,26 +37,34 @@
               <div class="logo-row">
                 <img v-if="logoPreview" :src="logoPreview" alt="" class="logo-preview" />
                 <img v-else-if="!logoReset && logoSet" :src="currentLogoUrl" alt="" class="logo-preview" />
-                <img v-else src="../assets/ns8-logo.png" alt="" class="logo-preview" />
-                <div>
-                  <cv-file-uploader
+                <img v-else src="../assets/page_default_brand.png" alt="" class="logo-preview" />
+                <div class="logo-actions">
+                  <input
                     :key="uploaderKey"
-                    kind="button"
+                    ref="logoFile"
+                    type="file"
                     accept=".png,.jpg,.jpeg,image/png,image/jpeg"
-                    :multiple="false"
-                    :removable="false"
-                    :button-label="$t('appearance.upload_logo')"
-                    @change="onLogoChange"
+                    class="logo-file"
+                    @change="onLogoChange($event.target.files)"
                   />
+                  <div class="logo-buttons">
+                    <NsButton
+                      kind="secondary"
+                      :icon="Upload20"
+                      type="button"
+                      @click="$refs.logoFile.click()"
+                      >{{ $t("appearance.upload_logo") }}</NsButton
+                    >
+                    <NsButton
+                      v-if="logoSet && !logoReset"
+                      kind="ghost"
+                      :icon="Reset20"
+                      type="button"
+                      @click="resetLogo"
+                      >{{ $t("appearance.reset_logo") }}</NsButton
+                    >
+                  </div>
                   <p class="helper">{{ $t("appearance.logo_helper") }}</p>
-                  <NsButton
-                    v-if="logoSet && !logoReset"
-                    kind="ghost"
-                    size="small"
-                    :icon="Reset20"
-                    @click="resetLogo"
-                    >{{ $t("appearance.reset_logo") }}</NsButton
-                  >
                 </div>
               </div>
               <p v-if="error.logo" class="invalid">{{ error.logo }}</p>
@@ -92,6 +100,7 @@ import {
   PageTitleService,
 } from "@nethserver/ns8-ui-lib";
 import Reset20 from "@carbon/icons-vue/es/reset/20";
+import Upload20 from "@carbon/icons-vue/es/upload/20";
 import LauncherSettings from "@/mixins/LauncherSettings";
 
 const LOGO_MAX_BYTES = 512 * 1024;
@@ -107,6 +116,7 @@ export default {
       q: { page: "appearance" },
       urlCheckInterval: null,
       Reset20,
+      Upload20,
       host: "",
       logoData: null,
       logoPreview: "",
@@ -144,7 +154,7 @@ export default {
   methods: {
     onLogoChange(files) {
       this.error.logo = "";
-      const file = files && files.length ? files[files.length - 1].file : null;
+      const file = files && files.length ? files[0] : null;
       if (!file) return;
       if (!["image/png", "image/jpeg"].includes(file.type)) {
         this.error.logo = this.$t("appearance.logo_invalid_format");
@@ -194,14 +204,15 @@ export default {
 .logo-row {
   display: flex;
   gap: $spacing-06;
-  align-items: flex-start;
+  align-items: center;
 }
-// cv-file-uploader reserves room for a file list we never show
-.logo-row ::v-deep .bx--file {
-  margin-bottom: 0;
-}
-.logo-row ::v-deep .bx--file-container:empty {
+.logo-file {
   display: none;
+}
+.logo-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-03;
 }
 .logo-preview {
   width: 64px;
@@ -212,7 +223,7 @@ export default {
 }
 .helper {
   font-size: 0.75rem;
-  margin: 0 0 $spacing-03;
+  margin-top: $spacing-03;
 }
 .invalid {
   color: #da1e28;
