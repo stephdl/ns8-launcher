@@ -36,6 +36,8 @@ Take screenshots of the launcher page
     Take Screenshot    filename=${OUTPUT DIR}/browser/screenshot/6._Launcher_public.png
     Run task    module/${module_id}/configure-module
     ...    {"host":"${TEST_HOST}","lets_encrypt":false,"auth_mode":"ldap","ldap_domain":"${USER_DOMAIN}"}
+    # The jar still holds the session of the LDAP suite, which would answer 200
+    Execute Command    rm -f /tmp/launcher.cookies
     Wait Until Keyword Succeeds    20 times    3 seconds
     ...    Launcher answers    /api/apps    401
     Reload
