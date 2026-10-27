@@ -19,7 +19,6 @@ ldap_domain = data["ldap_domain"] if data["auth_mode"] == "ldap" else ""
 access_changed = (os.environ.get("AUTH_MODE"), os.environ.get("LDAP_DOMAIN", "")) != (data["auth_mode"], ldap_domain)
 
 agent.set_env("TRAEFIK_HOST", data["host"])
-agent.set_env("TRAEFIK_LETS_ENCRYPT", data["lets_encrypt"])
 agent.set_env("AUTH_MODE", data["auth_mode"])
 agent.set_env("LDAP_DOMAIN", ldap_domain)
 agent.bind_user_domains([ldap_domain] if ldap_domain else [])

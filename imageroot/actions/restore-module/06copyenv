@@ -15,7 +15,6 @@ original_environment = request['environment']
 
 for evar in [
         "TRAEFIK_HOST",
-        "TRAEFIK_LETS_ENCRYPT",
         "AUTH_MODE",
         "LDAP_DOMAIN",
     ]:
