@@ -59,14 +59,18 @@ The list is refreshed:
 - every hour, to catch events missed while the module was stopped;
 - on demand, with the `refresh-apps` action (the Refresh button of the Apps page).
 
-The module needs `traefik@any:routeadm` to read the routes of every node, and
-`cluster:reader` to read the repository metadata.
+The module needs `traefik@any:routeadm` to read the routes of every node,
+`cluster:reader` to read the repository metadata, and `cluster:accountconsumer`
+to bind the user domain.
 
 ## Logs and CrowdSec
 
-The web server logs each request to the journal with the client address and
-the status code, like `192.0.2.10 "POST /api/login" 401 18ms`. A failed login
-also logs `login failed user='alice' ip=192.0.2.10`.
+The container logs to journald with the `launcher` tag. Each request is logged
+with the client address and the status code, like
+`192.0.2.10 "POST /api/login" 401 18ms`. A login also logs
+`login failed user='alice' ip=192.0.2.10` or
+`login ok user='alice' ip=192.0.2.10 remember=False`, and a kept session of a
+locked or removed account logs `session revoked user='alice' ip=192.0.2.10`.
 
 Status codes are exact: 401 for a failed login or a missing session, 429 when
 an address made 10 failed logins in 15 minutes, 404 for unknown paths.
