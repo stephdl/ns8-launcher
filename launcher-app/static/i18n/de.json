@@ -20,5 +20,7 @@
   "links": "Links",
   "external": "Extern",
   "no_apps": "Noch ist keine Anwendung veröffentlicht.",
-  "no_match": "Keine Anwendung entspricht Ihrer Suche."
+  "no_match": "Keine Anwendung entspricht Ihrer Suche.",
+  "show_password": "Passwort anzeigen",
+  "hide_password": "Passwort verbergen"
 }

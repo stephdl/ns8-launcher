@@ -95,6 +95,21 @@ main { flex: 1; }
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field label { font-size: 13px; color: var(--text-dim); }
 .field input { background: var(--bg); }
+.password { position: relative; }
+.password input { padding-right: 48px; }
+.reveal {
+  position: absolute; top: 0; right: 0;
+  width: 44px; height: 100%;
+  display: grid; place-items: center;
+  border: 0; border-radius: 0 8px 8px 0;
+  background: transparent;
+  color: var(--text-faint);
+  cursor: pointer;
+}
+.reveal:hover { color: var(--text); }
+.reveal svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.reveal .eye-off, .reveal[aria-pressed="true"] .eye { display: none; }
+.reveal[aria-pressed="true"] .eye-off { display: block; }
 .error { margin: 0; color: var(--danger); font-size: 14px; }
 .login .btn.primary { min-height: 44px; }
 

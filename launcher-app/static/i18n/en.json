@@ -20,5 +20,7 @@
   "links": "Links",
   "external": "External",
   "no_apps": "No application is published yet.",
-  "no_match": "No application matches your search."
+  "no_match": "No application matches your search.",
+  "show_password": "Show password",
+  "hide_password": "Hide password"
 }

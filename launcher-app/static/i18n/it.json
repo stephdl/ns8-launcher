@@ -20,5 +20,7 @@
   "links": "Link",
   "external": "Esterno",
   "no_apps": "Nessuna applicazione è ancora pubblicata.",
-  "no_match": "Nessuna applicazione corrisponde alla ricerca."
+  "no_match": "Nessuna applicazione corrisponde alla ricerca.",
+  "show_password": "Mostra password",
+  "hide_password": "Nascondi password"
 }

@@ -39,6 +39,22 @@ async function loadLanguage(code) {
     node.textContent = t(node.dataset.i18n);
   }
   $("search").placeholder = t("search_placeholder");
+  updatePasswordToggle();
+}
+
+function updatePasswordToggle() {
+  const shown = $("password").type === "text";
+  const button = $("toggle-password");
+  button.setAttribute("aria-pressed", String(shown));
+  button.setAttribute("aria-label", t(shown ? "hide_password" : "show_password"));
+  button.title = button.getAttribute("aria-label");
+}
+
+function togglePassword() {
+  const input = $("password");
+  input.type = input.type === "password" ? "text" : "password";
+  updatePasswordToggle();
+  input.focus();
 }
 
 async function api(path, options = {}) {
@@ -168,6 +184,9 @@ async function login(event) {
   });
   button.disabled = false;
   $("password").value = "";
+  // Never leave a revealed password field behind after a login attempt
+  $("password").type = "password";
+  updatePasswordToggle();
   if (result.status === 200) {
     config.user = result.body;
     renderHeader();
@@ -202,6 +221,7 @@ async function main() {
   $("search").addEventListener("input", renderApps);
   $("login-form").addEventListener("submit", login);
   $("logout").addEventListener("click", logout);
+  $("toggle-password").addEventListener("click", togglePassword);
 
   await loadLanguage(lang);
   config = (await api("/api/config")).body || {};
