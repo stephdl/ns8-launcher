@@ -12,7 +12,6 @@
         "validation_error": "Erros de validação"
     },
     "settings": {
-        "test_field": "Campo de teste",
         "configure_instance": "Configurar {instância}",
         "save": "Gravar",
         "title": "Configurações"

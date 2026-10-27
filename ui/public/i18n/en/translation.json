@@ -50,8 +50,7 @@
     "auth_mode_ldap": "LDAP: login required, applications are filtered by group",
     "ldap_domain": "User domain",
     "choose_ldap_domain": "Choose a user domain",
-    "ldap_domain_helper": "Users of this domain can log in to the launcher page",
-    "logo_invalid": "The logo must be a PNG or JPEG image of 512 KB at most"
+    "ldap_domain_helper": "Users of this domain can log in to the launcher page"
   },
   "about": {
     "title": "About"
