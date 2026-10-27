@@ -11,7 +11,7 @@ set -e
 # Prepare variables for later use
 images=()
 # The image will be pushed to GitHub container registry
-repobase="${REPOBASE:-ghcr.io/nethserver}"
+repobase="${REPOBASE:-ghcr.io/stephdl}"
 # Configure the image name
 reponame="launcher"
 
@@ -21,7 +21,7 @@ container=$(buildah from scratch)
 # Reuse existing nodebuilder-launcher container, to speed up builds
 if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-launcher; then
     echo "Pulling NodeJS runtime..."
-    buildah from --name nodebuilder-launcher -v "${PWD}:/usr/src:Z" docker.io/library/node:lts
+    buildah from --name nodebuilder-launcher -v "${PWD}:/usr/src:Z" docker.io/library/node:22.23.4
 fi
 
 echo "Build static UI files with node..."
@@ -31,16 +31,20 @@ buildah run \
     nodebuilder-launcher \
     sh -c "corepack enable && yarn install && yarn build"
 
+echo "Build the launcher web page image..."
+buildah build --layers --force-rm --tag "${repobase}/launcher-app" launcher-app
+images+=("${repobase}/launcher-app")
+
 # Add imageroot directory to the container image
 buildah add "${container}" imageroot /imageroot
 buildah add "${container}" ui/dist /ui
 
 buildah config --entrypoint=/ \
-    --label="org.nethserver.authorizations=traefik@node:routeadm" \
+    --label="org.nethserver.authorizations=traefik@any:routeadm cluster:accountconsumer,reader" \
     --label="org.nethserver.tcp-ports-demand=1" \
     --label="org.nethserver.rootfull=0" \
     --label="org.nethserver.min-core=3.20.1" \
-    --label="org.nethserver.images=docker.io/mariadb:10.11.19 docker.io/nginx:1.30.6-alpine" \
+    --label="org.nethserver.images=${repobase}/launcher-app:${IMAGETAG:-latest}" \
     "${container}"
 # Commit the image
 buildah commit "${container}" "${repobase}/${reponame}"

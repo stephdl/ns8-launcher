@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NethServer</title>
+  <link rel="icon" type="image/png" href="/brand/logo">
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <span class="brand">
+        <img class="brand-mark" src="/brand/logo" alt="">
+        <span>NethServer</span>
+      </span>
+      <div class="topbar-end">
+        <label for="lang" class="sr-only" data-i18n="language">Language</label>
+        <select id="lang"></select>
+        <span id="user" class="user" hidden></span>
+        <button id="logout" class="btn" type="button" hidden data-i18n="logout">Log out</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="hero">
+      <span class="eyebrow" id="hostname"></span>
+      <h1 id="welcome"></h1>
+      <p id="lead"></p>
+    </section>
+
+    <section id="login-view" class="login" hidden>
+      <form id="login-form" class="panel" novalidate>
+        <div class="field">
+          <label for="username" data-i18n="username">Username</label>
+          <input id="username" name="username" type="text" autocomplete="username" required>
+        </div>
+        <div class="field">
+          <label for="password" data-i18n="password">Password</label>
+          <input id="password" name="password" type="password" autocomplete="current-password" required>
+        </div>
+        <p id="login-error" class="error" role="alert" hidden></p>
+        <button class="btn primary" type="submit" data-i18n="login">Log in</button>
+      </form>
+    </section>
+
+    <section id="apps-view" class="apps" hidden>
+      <div class="toolbar">
+        <div id="chips" class="chips"></div>
+        <label for="search" class="sr-only" data-i18n="search">Search</label>
+        <input id="search" type="search" autocomplete="off">
+      </div>
+      <div id="groups"></div>
+      <p id="empty" class="empty" hidden></p>
+    </section>
+  </main>
+
+  <footer id="support" class="wrap support" hidden>
+    <div class="panel support-panel">
+      <div>
+        <b data-i18n="support_title">Need help?</b>
+        <span data-i18n="support_text">Contact the support of your infrastructure.</span>
+      </div>
+      <div id="support-links" class="support-links"></div>
+    </div>
+  </footer>
+</body>
+</html>
