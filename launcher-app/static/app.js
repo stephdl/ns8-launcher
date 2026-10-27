@@ -80,7 +80,7 @@ function renderHeader() {
   if (support.email) links.append(element("a", { href: `mailto:${support.email}`, text: support.email }));
   if (support.phone) links.append(element("a", { href: `tel:${support.phone.replace(/\s+/g, "")}`, text: support.phone }));
   if (support.url && /^https?:\/\//.test(support.url)) {
-    links.append(element("a", { href: support.url, class: "btn primary", rel: "noopener", text: t("support_ticket") }));
+    links.append(element("a", { href: support.url, class: "btn primary", target: "_blank", rel: "noopener noreferrer", text: t("support_ticket") }));
   }
   $("support").hidden = links.childElementCount === 0;
 }
@@ -126,7 +126,7 @@ function renderApps() {
         element("span", { class: "card-name", text: app.name }),
         element("span", { class: "card-host", text: app.host }),
       ]);
-      const card = element("a", { class: "card", href: app.url, rel: "noopener" }, [logo, body]);
+      const card = element("a", { class: "card", href: app.url, target: "_blank", rel: "noopener noreferrer" }, [logo, body]);
       if (app.external) card.append(element("span", { class: "badge", text: t("external") }));
       grid.append(card);
     }
