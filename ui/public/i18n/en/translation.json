@@ -2,7 +2,16 @@
   "common": {
     "required": "Required",
     "work_in_progress": "Work in progress",
-    "processing": "Processing..."
+    "processing": "Processing...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "yes": "Yes",
+    "no": "No",
+    "clear_search": "Clear search",
+    "no_search_results": "No results",
+    "no_search_results_description": "Try a different search"
   },
   "status": {
     "title": "Status",
@@ -19,7 +28,7 @@
     "no_services": "No services",
     "no_images": "No images",
     "no_volumes": "No volumes",
-    "launcher_webapp": "launcher webapp",
+    "launcher_webapp": "Launcher page",
     "not_configured": "Not configured",
     "open_webapp": "Open launcher",
     "configure": "Configure"
@@ -28,17 +37,21 @@
     "title": "Settings",
     "configure_instance": "Configure {instance}",
     "save": "Save",
-    "launcher_fqdn": "launcher hostname (FQDN)",
-    "lets_encrypt": "Request LE Certificate",
-    "http_to_https": "Force HTTPS",
+    "launcher_fqdn": "Launcher hostname (FQDN)",
     "enabled": "Enabled",
     "disabled": "Disabled",
-    "advanced": "Advanced",
     "configuring": "Configuring",
     "instance_configuration": "Configure launcher",
     "domain_already_used_in_traefik": "Domain already used in traefik",
     "host_pattern": "Must be a valid fully qualified domain name",
-    "host_format": "Must be a valid fully qualified domain name"
+    "host_format": "Must be a valid fully qualified domain name",
+    "auth_mode": "Access",
+    "auth_mode_public": "Public: no login, every application is visible",
+    "auth_mode_ldap": "LDAP: login required, applications are filtered by group",
+    "ldap_domain": "User domain",
+    "choose_ldap_domain": "Choose a user domain",
+    "ldap_domain_helper": "Users of this domain can log in to the launcher page",
+    "logo_invalid": "The logo must be a PNG or JPEG image of 512 KB at most"
   },
   "about": {
     "title": "About"
@@ -54,7 +67,11 @@
     "get-name": "Get name",
     "list-backup-repositories": "List backup repositories",
     "list-backups": "List backups",
-    "list-installed-modules": "List installed modules"
+    "list-installed-modules": "List installed modules",
+    "get-settings": "Get launcher settings",
+    "set-settings": "Save launcher settings",
+    "refresh-apps": "Refresh applications",
+    "list-groups": "List groups"
   },
   "error": {
     "error": "Error",
@@ -68,5 +85,71 @@
     "cannot_retrieve_module_info": "Cannot retrieve module info",
     "cannot_retrieve_installed_modules": "Cannot retrieve installed modules",
     "cannot_retrieve_configuration": "Cannot retrieve configuration"
+  },
+  "pagination": {
+    "items_per_page": "Items per page:",
+    "range_of_total_items": "{range} of {total} items",
+    "of_total_pages": "of {total} pages",
+    "previous_page": "Previous page",
+    "next_page": "Next page",
+    "page_number": "Page number"
+  },
+  "apps": {
+    "title": "Apps",
+    "description": "Every Traefik route with a host name on the cluster is listed here. The list follows route changes on its own; use Refresh to update it now.",
+    "refresh": "Refresh",
+    "search": "Search apps",
+    "no_apps": "No application found",
+    "no_apps_description": "Install an application with a host name, or press Refresh.",
+    "column_name": "Name",
+    "column_host": "Host",
+    "column_category": "Category",
+    "column_groups": "Groups",
+    "hidden": "Hidden",
+    "everyone": "Everyone",
+    "show": "Show",
+    "hide": "Hide",
+    "edit_app": "Edit {host}",
+    "name": "Display name",
+    "name_helper": "Leave empty to use {name}",
+    "category": "Category",
+    "no_category": "No category",
+    "groups": "Allowed groups",
+    "groups_placeholder": "Choose groups",
+    "groups_helper": "Leave empty to show the app to every logged in user",
+    "hide_app": "Hide this application",
+    "categories": "Categories",
+    "categories_description": "Categories group the cards on the launcher page.",
+    "new_category": "New category",
+    "add_category": "Add category",
+    "category_exists": "This category already exists",
+    "cannot_list_groups": "Cannot list the groups of the user domain"
+  },
+  "appearance": {
+    "title": "Appearance",
+    "welcome": "Welcome sentence",
+    "welcome_default": "Welcome to your NethServer 8 cluster",
+    "welcome_helper": "Leave empty to show the default sentence in the language of each visitor",
+    "logo": "Logo",
+    "upload_logo": "Upload a logo",
+    "logo_helper": "PNG or JPEG, 512 KB at most",
+    "reset_logo": "Restore the default logo",
+    "logo_invalid_format": "The logo must be a PNG or JPEG image",
+    "logo_too_large": "The logo must be 512 KB at most"
+  },
+  "support": {
+    "title": "Support and links",
+    "contacts": "Support contacts",
+    "url": "Ticketing URL",
+    "email": "Support email",
+    "phone": "Support phone",
+    "invalid_url": "Must start with http:// or https://",
+    "links": "External links",
+    "links_description": "Links to sites outside the cluster, shown with the applications.",
+    "add_link": "Add link",
+    "edit_link": "Edit link",
+    "link_name": "Name",
+    "link_url": "URL",
+    "no_links": "No external links"
   }
 }
