@@ -73,6 +73,7 @@
             :columns="[$t('support.link_name'), $t('support.link_url'), $t('apps.column_category')]"
             :rawColumns="['name', 'url', 'category']"
             :sortable="true"
+            :overflow-menu="true"
             :pageSizes="[10, 25, 50]"
             :isLoading="loading.getSettings"
             :skeletonRows="3"
@@ -121,7 +122,7 @@
         editing && editing.index >= 0 ? $t("support.edit_link") : $t("support.add_link")
       }}</template>
       <template slot="content">
-        <cv-form v-if="editing" @submit.prevent="saveLink">
+        <cv-form v-if="editing" class="modal-form" @submit.prevent="saveLink">
           <NsTextInput
             v-model.trim="editing.name"
             :label="$t('support.link_name')"
@@ -249,5 +250,14 @@ export default {
 }
 .description {
   margin-top: $spacing-03;
+}
+// Carbon gives dropdowns and text inputs different widths: line them up
+.modal-form .bx--form-item,
+.modal-form .bx--dropdown,
+.modal-form .bx--list-box,
+.modal-form .bx--text-input,
+.modal-form .bx--multi-select {
+  width: 100%;
+  max-width: 38rem;
 }
 </style>

@@ -196,6 +196,13 @@ export default {
   gap: $spacing-06;
   align-items: flex-start;
 }
+// cv-file-uploader reserves room for a file list we never show
+.logo-row ::v-deep .bx--file {
+  margin-bottom: 0;
+}
+.logo-row ::v-deep .bx--file-container:empty {
+  display: none;
+}
 .logo-preview {
   width: 64px;
   height: 64px;
@@ -205,7 +212,7 @@ export default {
 }
 .helper {
   font-size: 0.75rem;
-  margin: $spacing-02 0;
+  margin: 0 0 $spacing-03;
 }
 .invalid {
   color: #da1e28;

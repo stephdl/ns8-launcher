@@ -38,6 +38,7 @@
             :columns="i18nTableColumns"
             :rawColumns="tableColumns"
             :sortable="true"
+            :overflow-menu="true"
             :pageSizes="[10, 25, 50, 100]"
             isSearchable
             :searchPlaceholder="$t('apps.search')"
@@ -134,7 +135,7 @@
     >
       <template slot="title">{{ $t("apps.edit_app", { host: editing && editing.host }) }}</template>
       <template slot="content">
-        <cv-form v-if="editing" @submit.prevent="saveApp">
+        <cv-form v-if="editing" class="modal-form" @submit.prevent="saveApp">
           <NsTextInput
             v-model.trim="editing.name"
             :label="$t('apps.name')"
@@ -412,6 +413,15 @@ export default {
   flex-wrap: wrap;
   gap: $spacing-05;
   align-items: flex-end;
+  max-width: 38rem;
+}
+// Carbon gives dropdowns and text inputs different widths: line them up
+.modal-form .bx--form-item,
+.modal-form .bx--dropdown,
+.modal-form .bx--list-box,
+.modal-form .bx--text-input,
+.modal-form .bx--multi-select {
+  width: 100%;
   max-width: 38rem;
 }
 </style>
