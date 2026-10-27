@@ -2,22 +2,32 @@
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Configure launcher",
     "$id": "http://nethserver.org/json-schema/task/input/launcher/configure-module",
-    "description": "Configure launcher",
+    "description": "Configure the launcher web page",
     "examples": [
         {
-            "host": "launcher.domain.org",
-            "http2https": true,
-            "lets_encrypt": true
+            "host": "home.domain.org",
+            "lets_encrypt": true,
+            "auth_mode": "ldap",
+            "ldap_domain": "domain.org"
+        },
+        {
+            "host": "home.domain.org",
+            "lets_encrypt": false,
+            "auth_mode": "public",
+            "ldap_domain": ""
         }
     ],
     "type": "object",
     "required": [
-        "host"
+        "host",
+        "lets_encrypt",
+        "auth_mode",
+        "ldap_domain"
     ],
     "properties": {
         "host": {
             "type": "string",
-            "description": "Host name for the application, like 'launcher.domain.org'",
+            "description": "Host name of the launcher page, like 'home.domain.org'",
             "format": "hostname",
             "pattern": "\\."
         },
@@ -26,10 +36,28 @@
             "title": "Let's Encrypt certificate",
             "description": "Request a valid Let's Encrypt certificate."
         },
-        "http2https": {
-            "type": "boolean",
-            "title": "HTTP to HTTPS redirection",
-            "description": "Redirect all the HTTP requests to HTTPS"
+        "auth_mode": {
+            "type": "string",
+            "enum": ["public", "ldap"],
+            "description": "public: no login, every app is visible. ldap: login required, apps filtered by LDAP groups."
+        },
+        "ldap_domain": {
+            "type": "string",
+            "description": "User domain used to log in. Required when auth_mode is ldap."
+        }
+    },
+    "if": {
+        "properties": {
+            "auth_mode": {
+                "const": "ldap"
+            }
+        }
+    },
+    "then": {
+        "properties": {
+            "ldap_domain": {
+                "minLength": 1
+            }
         }
     }
 }

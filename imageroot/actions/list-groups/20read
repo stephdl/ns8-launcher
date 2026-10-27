@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+
+#
+# Copyright (C) 2026 Nethesis S.r.l.
+# SPDX-License-Identifier: GPL-3.0-or-later
+#
+
+import json
+import os
+import sys
+
+import agent
+from agent.ldapclient import Ldapclient
+from agent.ldapproxy import Ldapproxy
+
+groups = []
+domain = os.getenv("LDAP_DOMAIN", "")
+if domain:
+    odom = Ldapproxy().get_domain(domain)
+    agent.assert_exp(odom is not None, f"User domain {domain} is not available")
+    groups = sorted(
+        ({"group": g["group"], "description": g.get("description", "")} for g in Ldapclient.factory(**odom).list_groups()),
+        key=lambda g: g["group"].lower(),
+    )
+
+json.dump({"groups": groups}, fp=sys.stdout)

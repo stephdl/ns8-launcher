@@ -1,36 +1,23 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema#",
-    "title": "Get launcher settings",
-    "$id": "http://nethserver.org/json-schema/task/input/launcher/get-configuration",
-    "description": "Get launcher settings",
+    "title": "Get launcher configuration",
+    "$id": "http://nethserver.org/json-schema/task/output/launcher/get-configuration",
     "examples": [
         {
-            "host": "launcher.domain.org",
-            "http2https": true,
-            "lets_encrypt": true
+            "host": "home.domain.org",
+            "lets_encrypt": true,
+            "auth_mode": "ldap",
+            "ldap_domain": "domain.org",
+            "ldap_domain_list": ["domain.org"]
         }
     ],
     "type": "object",
-    "required": [
-        "host",
-        "http2https",
-        "lets_encrypt"
-    ],
+    "required": ["host", "lets_encrypt", "auth_mode", "ldap_domain", "ldap_domain_list"],
     "properties": {
-        "host": {
-            "type": "string",
-            "description": "Host name for the application, like 'launcher.domain.org'",
-            "format": "idn-hostname"
-        },
-        "lets_encrypt": {
-            "type": "boolean",
-            "title": "Let's Encrypt certificate",
-            "description": "Request a valid Let's Encrypt certificate."
-        },
-        "http2https": {
-            "type": "boolean",
-            "title": "HTTP to HTTPS redirection",
-            "description": "Redirect all the HTTP requests to HTTPS"
-        }
+        "host": {"type": "string"},
+        "lets_encrypt": {"type": "boolean"},
+        "auth_mode": {"type": "string", "enum": ["public", "ldap"]},
+        "ldap_domain": {"type": "string"},
+        "ldap_domain_list": {"type": "array", "items": {"type": "string"}}
     }
 }

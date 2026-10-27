@@ -1,0 +1,72 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Set launcher settings",
+    "$id": "http://nethserver.org/json-schema/task/input/launcher/set-settings",
+    "description": "Page content: welcome text, logo, support contacts, categories, external links and per-app overrides",
+    "examples": [
+        {
+            "welcome": "Welcome to ACME",
+            "support": {"url": "https://support.acme.org", "email": "support@acme.org", "phone": "+33 1 23 45 67 89"},
+            "categories": ["Mail", "Files"],
+            "apps": {
+                "roundcubemail1": {"hidden": false, "name": "Webmail", "category": "Mail", "groups": ["staff"]}
+            },
+            "links": [
+                {"name": "Documentation", "url": "https://docs.nethserver.org", "category": "", "groups": []}
+            ]
+        }
+    ],
+    "type": "object",
+    "required": ["welcome", "support", "categories", "apps", "links"],
+    "additionalProperties": false,
+    "properties": {
+        "welcome": {"type": "string", "maxLength": 200},
+        "support": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+                "url": {"type": "string", "maxLength": 500, "pattern": "^(https?://.+)?$"},
+                "email": {"type": "string", "maxLength": 200},
+                "phone": {"type": "string", "maxLength": 50}
+            }
+        },
+        "categories": {
+            "type": "array",
+            "maxItems": 50,
+            "items": {"type": "string", "minLength": 1, "maxLength": 50}
+        },
+        "apps": {
+            "type": "object",
+            "propertyNames": {"pattern": "^[A-Za-z0-9._-]+$"},
+            "additionalProperties": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                    "hidden": {"type": "boolean"},
+                    "name": {"type": "string", "maxLength": 100},
+                    "category": {"type": "string", "maxLength": 50},
+                    "groups": {"type": "array", "items": {"type": "string"}}
+                }
+            }
+        },
+        "links": {
+            "type": "array",
+            "maxItems": 100,
+            "items": {
+                "type": "object",
+                "required": ["name", "url"],
+                "additionalProperties": false,
+                "properties": {
+                    "name": {"type": "string", "minLength": 1, "maxLength": 100},
+                    "url": {"type": "string", "pattern": "^https?://.+", "maxLength": 500},
+                    "category": {"type": "string", "maxLength": 50},
+                    "groups": {"type": "array", "items": {"type": "string"}}
+                }
+            }
+        },
+        "logo": {
+            "type": "string",
+            "description": "Base64 PNG or JPEG image, at most 512 KiB. An empty string restores the default logo. Omit it to keep the current logo."
+        }
+    }
+}
