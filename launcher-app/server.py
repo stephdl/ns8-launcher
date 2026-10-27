@@ -137,9 +137,12 @@ def clear_failures(ip):
 
 
 def ldap_connection(user=None, password=None):
-    server = ldap3.Server(LDAP_HOST, port=LDAP_PORT, connect_timeout=5)
+    # No schema read and no referral chasing: on AD the first downloads megabytes
+    # at each bind, the second waits on DNS zones the container cannot reach
+    server = ldap3.Server(LDAP_HOST, port=LDAP_PORT, connect_timeout=5, get_info=ldap3.NONE)
     return ldap3.Connection(server, user=user, password=password, auto_bind=True,
-                            raise_exceptions=True, receive_timeout=10, read_only=True)
+                            raise_exceptions=True, receive_timeout=10, read_only=True,
+                            auto_referrals=False)
 
 
 def ldap_find_user(conn, username):
@@ -181,19 +184,18 @@ def ldap_authenticate(username, password):
     if not username or not password or not LDAP_HOST:
         return None
 
+    # One service connection for both lookups; groups are returned only after the password check
     with ldap_connection(LDAP_BIND_DN, LDAP_BIND_PASSWORD) as conn:
         found = ldap_find_user(conn, username)
-    if not found:
-        return None
-    user_dn, uid, display_name, group_filter, group_attribute = found
+        if not found:
+            return None
+        user_dn, uid, display_name, group_filter, group_attribute = found
+        groups = ldap_groups(conn, group_filter, group_attribute)
 
     try:
         ldap_connection(user_dn, password).unbind()
     except (ldap3.core.exceptions.LDAPBindError, ldap3.core.exceptions.LDAPInvalidCredentialsResult):
         return None
-
-    with ldap_connection(LDAP_BIND_DN, LDAP_BIND_PASSWORD) as conn:
-        groups = ldap_groups(conn, group_filter, group_attribute)
     return uid, display_name, groups
 
 
