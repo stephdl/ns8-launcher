@@ -1,35 +1,155 @@
 {
-    "common": {
-        "required": "Obrigatório",
-        "work_in_progress": "Em progresso",
-        "processing": "Procesando..."
-    },
-    "status": {
-        "services": "Serviço | Serviços",
-        "app_instance": "Instância do aplicativo",
-        "title": "Estado"
-    },
-    "error": {
-        "403": "Operation not authorized",
-        "401": "Invalid authentication",
-        "generic_error": "Something went wrong",
-        "error": "Error",
-        "network_timeout": "Network timeout",
-        "404": "Resource not found",
-        "network_error": "Network error",
-        "validation_error": "Validation error"
-    },
-    "about": {
-        "title": "About"
-    },
-    "action": {
-        "list-backup-repositories": "List backup repositories",
-        "list-backups": "List backups"
-    },
-    "task": {
-        "cannot_create_task": "Cannot create task {action}"
-    },
-    "settings": {
-        "title": "Settings"
-    }
+  "common": {
+    "required": "Obrigatório",
+    "work_in_progress": "Em andamento",
+    "processing": "Processando...",
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "yes": "Sim",
+    "no": "Não",
+    "clear_search": "Limpar busca",
+    "no_search_results": "Sem resultados",
+    "no_search_results_description": "Tente uma busca diferente"
+  },
+  "status": {
+    "title": "Estado",
+    "app_instance": "Instância do aplicativo",
+    "services": "Serviço | Serviços",
+    "app_images": "Imagem do aplicativo | Imagens dos aplicativos",
+    "app_volumes": "Volume do aplicativo | Volumes dos aplicativos",
+    "installation_node": "Nó de instalação",
+    "node": "Nó",
+    "name": "Nome",
+    "size": "Tamanho",
+    "created": "Criado",
+    "mount": "Montar",
+    "no_services": "Nenhum serviço",
+    "no_images": "Sem imagens",
+    "no_volumes": "Sem volumes",
+    "launcher_webapp": "Página do launcher",
+    "not_configured": "Não configurado",
+    "open_webapp": "Abrir launcher",
+    "configure": "Configurar"
+  },
+  "settings": {
+    "title": "Configurações",
+    "configure_instance": "Configurar {instance}",
+    "save": "Salvar",
+    "launcher_fqdn": "Nome do host do launcher (FQDN)",
+    "enabled": "Ativado",
+    "disabled": "Desativado",
+    "configuring": "Configurando",
+    "instance_configuration": "Configurar launcher",
+    "domain_already_used_in_traefik": "Domínio já utilizado no Traefik",
+    "host_pattern": "Deve ser um nome de domínio totalmente qualificado (FQDN) válido",
+    "host_format": "Deve ser um nome de domínio totalmente qualificado (FQDN) válido",
+    "auth_mode": "Acesso",
+    "auth_mode_public": "Público: sem login, todos os aplicativos são visíveis",
+    "auth_mode_ldap": "LDAP: login obrigatório, aplicativos filtrados por grupo",
+    "ldap_domain": "Domínio de usuários",
+    "choose_ldap_domain": "Escolher um domínio de usuários",
+    "ldap_domain_helper": "Os usuários deste domínio podem entrar na página do launcher",
+    "logo_invalid": "O logotipo deve ser uma imagem PNG ou JPEG de no máximo 512 KB"
+  },
+  "about": {
+    "title": "Sobre"
+  },
+  "task": {
+    "cannot_create_task": "Não é possível criar a tarefa {action}"
+  },
+  "action": {
+    "get-status": "Obter status",
+    "get-configuration": "Obter configuração",
+    "configure-module": "Configurar módulo",
+    "get-module-info": "Obter informações do módulo",
+    "get-name": "Obter nome",
+    "list-backup-repositories": "Listar repositórios de backup",
+    "list-backups": "Listar backups",
+    "list-installed-modules": "Listar módulos instalados",
+    "get-settings": "Obter configurações do launcher",
+    "set-settings": "Salvar configurações do launcher",
+    "refresh-apps": "Atualizar aplicativos",
+    "list-groups": "Listar grupos"
+  },
+  "error": {
+    "error": "Erro",
+    "generic_error": "Algo deu errado",
+    "validation_error": "Erro de validação",
+    "network_error": "Erro de rede",
+    "network_timeout": "Tempo limite da rede",
+    "401": "Autenticação inválida",
+    "403": "Operação não autorizada",
+    "404": "Recurso não encontrado",
+    "cannot_retrieve_module_info": "Não é possível recuperar informações do módulo",
+    "cannot_retrieve_installed_modules": "Não é possível recuperar módulos instalados",
+    "cannot_retrieve_configuration": "Não é possível recuperar a configuração"
+  },
+  "pagination": {
+    "items_per_page": "Itens por página:",
+    "range_of_total_items": "{range} de {total} itens",
+    "of_total_pages": "de {total} páginas",
+    "previous_page": "Página anterior",
+    "next_page": "Próxima página",
+    "page_number": "Número da página"
+  },
+  "apps": {
+    "title": "Aplicativos",
+    "description": "Todas as rotas Traefik com nome de host no cluster são listadas aqui. A lista acompanha alterações automaticamente; use Atualizar para atualizá-la agora.",
+    "refresh": "Atualizar",
+    "search": "Buscar aplicativos",
+    "no_apps": "Nenhum aplicativo encontrado",
+    "no_apps_description": "Instale um aplicativo com um nome de host ou pressione Atualizar.",
+    "column_name": "Nome",
+    "column_host": "Host",
+    "column_category": "Categoria",
+    "column_groups": "Grupos",
+    "hidden": "Oculto",
+    "everyone": "Todos",
+    "show": "Mostrar",
+    "hide": "Ocultar",
+    "edit_app": "Editar {host}",
+    "name": "Nome de exibição",
+    "name_helper": "Deixe em branco para usar {name}",
+    "category": "Categoria",
+    "no_category": "Sem categoria",
+    "groups": "Grupos permitidos",
+    "groups_placeholder": "Escolher grupos",
+    "groups_helper": "Deixe em branco para mostrar o aplicativo a todos os usuários conectados",
+    "hide_app": "Ocultar este aplicativo",
+    "categories": "Categorias",
+    "categories_description": "As categorias agrupam os cartões na página do launcher.",
+    "new_category": "Nova categoria",
+    "add_category": "Adicionar categoria",
+    "category_exists": "Esta categoria já existe",
+    "cannot_list_groups": "Não é possível listar os grupos do domínio de usuários"
+  },
+  "appearance": {
+    "title": "Aparência",
+    "welcome": "Frase de boas-vindas",
+    "welcome_default": "Bem-vindo ao seu cluster NethServer 8",
+    "welcome_helper": "Deixe em branco para mostrar a frase padrão no idioma de cada visitante",
+    "logo": "Logotipo",
+    "upload_logo": "Enviar um logotipo",
+    "logo_helper": "PNG ou JPEG, no máximo 512 KB",
+    "reset_logo": "Restaurar o logotipo padrão",
+    "logo_invalid_format": "O logotipo deve ser uma imagem PNG ou JPEG",
+    "logo_too_large": "O logotipo deve ter no máximo 512 KB"
+  },
+  "support": {
+    "title": "Suporte e links",
+    "contacts": "Contatos de suporte",
+    "url": "URL de suporte",
+    "email": "E-mail de suporte",
+    "phone": "Telefone de suporte",
+    "invalid_url": "Deve começar com http:// ou https://",
+    "links": "Links externos",
+    "links_description": "Links para sites fora do cluster, mostrados junto com os aplicativos.",
+    "add_link": "Adicionar link",
+    "edit_link": "Editar link",
+    "link_name": "Nome",
+    "link_url": "URL",
+    "no_links": "Sem links externos"
+  }
 }

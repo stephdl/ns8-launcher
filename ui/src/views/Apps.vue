@@ -151,6 +151,7 @@
           </cv-select>
           <NsMultiSelect
             v-if="authMode === 'ldap'"
+            :key="groups.length"
             v-model="editing.groups"
             :options="groupOptions"
             :title="$t('apps.groups')"
@@ -162,6 +163,8 @@
             filterable
             auto-filter
             auto-highlight
+            showItemDescription
+            marginBottomOnOpen
             class="mg-bottom"
           />
           <NsToggle
@@ -354,6 +357,9 @@ export default {
       this.saveSettings();
     },
     addCategory() {
+      if (!this.newCategory || this.loading.getSettings || this.loading.setSettings) {
+        return;
+      }
       this.error.newCategory = "";
       if (this.settings.categories.includes(this.newCategory)) {
         this.error.newCategory = this.$t("apps.category_exists");

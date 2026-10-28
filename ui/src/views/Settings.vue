@@ -23,16 +23,15 @@
       <cv-column>
         <cv-tile light>
           <cv-form @submit.prevent="configureModule">
-            <cv-text-input
+            <NsTextInput
               :label="$t('settings.launcher_fqdn')"
               placeholder="home.example.org"
               v-model.trim="host"
               class="mg-bottom"
-              :invalid-message="$t(error.host)"
+              :invalid-message="error.host"
               :disabled="loading.getConfiguration || loading.configureModule"
               ref="host"
-            >
-            </cv-text-input>
+            />
             <NsToggle
               value="letsEncrypt"
               :label="core.$t('apps_lets_encrypt.request_https_certificate')"
@@ -355,7 +354,7 @@ export default {
       this.validationErrorDetails = [];
       let isValidationOk = true;
       if (!this.host) {
-        this.error.host = "common.required";
+        this.error.host = this.$t("common.required");
 
         if (isValidationOk) {
           this.focusElement("host");
