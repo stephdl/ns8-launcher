@@ -58,7 +58,8 @@
     "auth_mode_ldap": "LDAP : connexion obligatoire, applications filtrées par groupe",
     "ldap_domain": "Domaine utilisateurs",
     "choose_ldap_domain": "Choisir un domaine utilisateurs",
-    "ldap_domain_helper": "Les utilisateurs de ce domaine peuvent se connecter à la page launcher"
+    "ldap_domain_helper": "Les utilisateurs de ce domaine peuvent se connecter à la page launcher",
+    "logo_invalid": "Le logo doit être une image PNG ou JPEG de 512 Ko maximum"
   },
   "about": {
     "title": "À propos"

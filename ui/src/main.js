@@ -42,12 +42,28 @@ import { loadLanguage } from "./i18n";
 loadI18n();
 
 async function loadI18n() {
-  const navigatorLang = navigator.language.substring(0, 2);
-  const messages = await loadLanguage(navigatorLang);
+  const coreLang =
+    window.parent &&
+    window.parent.core &&
+    window.parent.core.$i18n &&
+    window.parent.core.$i18n.locale;
+  const navigatorLang = (coreLang || navigator.language).substring(0, 2);
+  const enMessages = await loadLanguage("en");
+  const messages =
+    navigatorLang === "en" ? enMessages : await loadLanguage(navigatorLang);
   Vue.use(VueI18n);
-  const i18n = new VueI18n();
-  i18n.setLocaleMessage(navigatorLang, messages.default);
-  i18n.locale = navigatorLang;
+  const i18n = new VueI18n({
+    locale: navigatorLang,
+    fallbackLocale: "en",
+    silentFallbackWarn: true,
+    silentTranslationWarn: true,
+    messages: {
+      en: enMessages.default,
+      ...(messages && messages.default
+        ? { [navigatorLang]: messages.default }
+        : {}),
+    },
+  });
 
   new Vue({
     router,
