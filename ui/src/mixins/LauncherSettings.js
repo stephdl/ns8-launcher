@@ -98,13 +98,21 @@ export default {
         () => {
           this.error.setSettings = this.$t("error.generic_error");
           this.loading.setSettings = false;
+          // Drop the local edits the server did not store
+          this.getSettings();
           settle(false);
         },
         (validationErrors) => {
           this.loading.setSettings = false;
+          // Schema errors have no message of their own
           this.error.setSettings = validationErrors
-            .map((e) => this.$t("settings." + e.error))
+            .map((e) =>
+              this.$te("settings." + e.error)
+                ? this.$t("settings." + e.error)
+                : this.$t("error.validation_error")
+            )
             .join(", ");
+          this.getSettings();
           settle(false);
         }
       );
