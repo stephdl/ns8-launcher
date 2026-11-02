@@ -29,7 +29,13 @@
         "auth_mode_ldap": "LDAP: saioa hasi behar da, aplikazioak taldeka iragazten dira",
         "ldap_domain": "Erabiltzaile-domeinua",
         "choose_ldap_domain": "Aukeratu erabiltzaile-domeinu bat",
-        "ldap_domain_helper": "Domeinu honetako erabiltzaileek launcher orrian saioa has dezakete"
+        "ldap_domain_helper": "Domeinu honetako erabiltzaileek launcher orrian saioa has dezakete",
+        "password_portal": "Pasahitza aldatzeko esteka",
+        "password_portal_tips": "Saioa hasita duten erabiltzaileek NS8 erabiltzaile-atarirako esteka ikusten dute, eta bertan pasahitza alda dezakete. Atariak erabiltzaileentzat eskuragarri egon behar du.",
+        "password_portal_url": "Erabiltzaile-atariaren URLa",
+        "password_portal_url_pattern": "https:// URL bat izan behar du",
+        "password_portal_suggested": "Erabiltzaile-domeinua exekutatzen duen nodotik hartua. Aldatu erabiltzaileek nodo honetara beste izen batekin sartzen badira.",
+        "password_portal_no_suggestion": "Ez da domeinu honetarako ataririk aurkitu: idatzi bere URLa"
     },
     "common": {
         "required": "Beharrezkoa",
@@ -80,7 +86,9 @@
         "get-settings": "Lortu launcherraren ezarpenak",
         "set-settings": "Gorde launcherraren ezarpenak",
         "refresh-apps": "Freskatu aplikazioak",
-        "list-groups": "Zerrendatu taldeak"
+        "list-groups": "Zerrendatu taldeak",
+        "list-user-domains": "Zerrendatu erabiltzaile-domeinuak",
+        "get-fqdn": "Lortu FQDN"
     },
     "task": {
         "cannot_create_task": "Ezin da zeregina {action} sortu"

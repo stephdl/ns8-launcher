@@ -61,7 +61,9 @@
         "get-settings": "Obter configurações do launcher",
         "set-settings": "Salvar configurações do launcher",
         "refresh-apps": "Atualizar aplicativos",
-        "list-groups": "Listar grupos"
+        "list-groups": "Listar grupos",
+        "list-user-domains": "Listar domínios de usuários",
+        "get-fqdn": "Obter FQDN"
     },
     "task": {
         "cannot_create_task": "Não foi possível criar a tarefa {action}"
@@ -83,7 +85,13 @@
         "auth_mode_ldap": "LDAP: login obrigatório, os aplicativos são filtrados por grupo",
         "ldap_domain": "Domínio de usuários",
         "choose_ldap_domain": "Escolha um domínio de usuários",
-        "ldap_domain_helper": "Os usuários deste domínio podem fazer login na página do launcher"
+        "ldap_domain_helper": "Os usuários deste domínio podem fazer login na página do launcher",
+        "password_portal": "Link para alterar a senha",
+        "password_portal_tips": "Os usuários logados veem um link para o portal do usuário NS8, onde podem alterar a senha. O portal precisa estar acessível para os usuários.",
+        "password_portal_url": "URL do portal do usuário",
+        "password_portal_url_pattern": "Deve ser uma URL https://",
+        "password_portal_suggested": "Obtida do nó que hospeda o domínio de usuários. Altere-a se os usuários acessarem este nó com outro nome.",
+        "password_portal_no_suggestion": "Nenhum portal encontrado para este domínio: digite a URL"
     },
     "pagination": {
         "items_per_page": "Itens por página:",

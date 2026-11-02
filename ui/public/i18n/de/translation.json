@@ -29,7 +29,13 @@
         "auth_mode_ldap": "LDAP: Anmeldung erforderlich, Anwendungen werden nach Gruppe gefiltert",
         "ldap_domain": "Benutzerdomain",
         "choose_ldap_domain": "Benutzerdomain wählen",
-        "ldap_domain_helper": "Benutzer dieser Domain können sich an der Launcher-Seite anmelden"
+        "ldap_domain_helper": "Benutzer dieser Domain können sich an der Launcher-Seite anmelden",
+        "password_portal": "Link zum Ändern des Passworts",
+        "password_portal_tips": "Angemeldete Benutzer sehen einen Link zum NS8-Benutzerportal, wo sie ihr Passwort ändern können. Das Portal muss für die Benutzer erreichbar sein.",
+        "password_portal_url": "URL des Benutzerportals",
+        "password_portal_url_pattern": "Muss eine https://-URL sein",
+        "password_portal_suggested": "Vom Knoten übernommen, auf dem die Benutzerdomain läuft. Ändern Sie sie, wenn Benutzer diesen Knoten unter einem anderen Namen erreichen.",
+        "password_portal_no_suggestion": "Kein Portal für diese Domain gefunden: geben Sie die URL ein"
     },
     "common": {
         "required": "erforderlich",
@@ -80,7 +86,9 @@
         "get-settings": "Launcher-Einstellungen abrufen",
         "set-settings": "Launcher-Einstellungen speichern",
         "refresh-apps": "Anwendungen aktualisieren",
-        "list-groups": "Gruppen auflisten"
+        "list-groups": "Gruppen auflisten",
+        "list-user-domains": "Benutzerdomains auflisten",
+        "get-fqdn": "FQDN abrufen"
     },
     "task": {
         "cannot_create_task": "{task} kann nicht erstellt werden"
