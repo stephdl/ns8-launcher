@@ -39,7 +39,8 @@
     "launcher_webapp": "Page launcher",
     "not_configured": "Non configuré",
     "open_webapp": "Ouvrir le launcher",
-    "configure": "Configurer"
+    "configure": "Configurer",
+    "go_to_node_details": "Voir le nœud"
   },
   "settings": {
     "title": "Paramètres",

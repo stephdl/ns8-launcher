@@ -69,7 +69,8 @@
         "launcher_webapp": "Launcher orria",
         "not_configured": "Konfiguratu gabe",
         "open_webapp": "Ireki launcherra",
-        "configure": "Konfiguratu"
+        "configure": "Konfiguratu",
+        "go_to_node_details": "Joan nodoaren xehetasunetara"
     },
     "about": {
         "title": "Honi buruz"

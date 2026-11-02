@@ -31,7 +31,8 @@
         "launcher_webapp": "Pagina launcher",
         "not_configured": "Non configurato",
         "open_webapp": "Apri launcher",
-        "configure": "Configura"
+        "configure": "Configura",
+        "go_to_node_details": "Vai ai dettagli del nodo"
     },
     "settings": {
         "save": "Salva",
