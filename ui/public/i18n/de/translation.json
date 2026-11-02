@@ -91,7 +91,7 @@
         "get-fqdn": "FQDN abrufen"
     },
     "task": {
-        "cannot_create_task": "{task} kann nicht erstellt werden"
+        "cannot_create_task": "Aufgabe {action} kann nicht erstellt werden"
     },
     "pagination": {
         "items_per_page": "Einträge pro Seite:",

@@ -354,6 +354,10 @@ export default {
       this.saveSettings();
     },
     addCategory() {
+      // Enter in the field submits even when the button is disabled
+      if (!this.newCategory || this.loading.setSettings) {
+        return;
+      }
       this.error.newCategory = "";
       if (this.settings.categories.includes(this.newCategory)) {
         this.error.newCategory = this.$t("apps.category_exists");

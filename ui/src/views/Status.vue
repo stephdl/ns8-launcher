@@ -47,7 +47,7 @@
           :description="this.host ? this.host : $t('status.not_configured')"
           :icon="Wikis32"
           :loading="loading.getConfiguration"
-          :isErrorShown="error.getConfiguration"
+          :isErrorShown="!!error.getConfiguration"
           :errorTitle="$t('error.cannot_retrieve_configuration')"
           :errorDescription="error.getConfiguration"
           class="min-height-card"
@@ -335,6 +335,7 @@ export default {
         getStatus: "",
         listBackupRepositories: "",
         listBackups: "",
+        getConfiguration: "",
       },
     };
   },
@@ -375,7 +376,7 @@ export default {
       200
     );
   },
-  beforeUnmount() {
+  beforeDestroy() {
     clearTimeout(this.redirectTimeout);
   },
   created() {
