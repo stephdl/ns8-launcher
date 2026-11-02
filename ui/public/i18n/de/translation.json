@@ -69,7 +69,8 @@
         "launcher_webapp": "Launcher-Seite",
         "not_configured": "Nicht konfiguriert",
         "open_webapp": "Launcher öffnen",
-        "configure": "Konfigurieren"
+        "configure": "Konfigurieren",
+        "go_to_node_details": "Zu den Knotendetails"
     },
     "about": {
         "title": "Über"

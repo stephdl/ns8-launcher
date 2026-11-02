@@ -93,7 +93,18 @@
           :icon="Chip32"
           :loading="loading.getStatus || loading.getConfiguration"
           class="min-height-card"
-        />
+        >
+          <template slot="content">
+            <NsButton
+              kind="ghost"
+              :icon="ArrowRight20"
+              :disabled="!status.node"
+              @click="goToNodeDetails"
+            >
+              {{ $t("status.go_to_node_details") }}
+            </NsButton>
+          </template>
+        </NsInfoCard>
       </cv-column>
       <cv-column :md="4" :max="4">
         <NsBackupCard
@@ -385,6 +396,9 @@ export default {
     this.listBackupRepositories();
   },
   methods: {
+    goToNodeDetails() {
+      this.core.$router.push(`/nodes/${this.status.node}`);
+    },
     goToWebapp() {
       window.open(`https://${this.host}`, "_blank");
     },

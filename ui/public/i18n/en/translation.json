@@ -31,7 +31,8 @@
     "launcher_webapp": "Launcher page",
     "not_configured": "Not configured",
     "open_webapp": "Open launcher",
-    "configure": "Configure"
+    "configure": "Configure",
+    "go_to_node_details": "Go to node details"
   },
   "settings": {
     "title": "Settings",

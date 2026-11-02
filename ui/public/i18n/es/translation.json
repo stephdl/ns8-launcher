@@ -69,7 +69,8 @@
         "launcher_webapp": "Página del launcher",
         "not_configured": "No configurado",
         "open_webapp": "Abrir launcher",
-        "configure": "Configurar"
+        "configure": "Configurar",
+        "go_to_node_details": "Ir a los detalles del nodo"
     },
     "about": {
         "title": "Acerca de"

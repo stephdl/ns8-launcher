@@ -31,7 +31,8 @@
         "mount": "Ponto de montagem",
         "no_services": "Nenhum serviço",
         "no_images": "Nenhuma imagem",
-        "no_volumes": "Nenhum volume"
+        "no_volumes": "Nenhum volume",
+        "go_to_node_details": "Ver detalhes do nó"
     },
     "error": {
         "403": "Operação não autorizada",
