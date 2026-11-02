@@ -51,10 +51,9 @@ Check if the password portal link is published
     ...    {"host":"${TEST_HOST}","lets_encrypt":false,"auth_mode":"ldap","ldap_domain":"${USER_DOMAIN}","password_portal_url":"${PORTAL_URL}"}
     ${config} =    Run task    module/${module_id}/get-configuration    {}
     Should Be Equal    ${config}[password_portal_url]    ${PORTAL_URL}
+    # Same mode and domain keep the session alive, so wait for the restarted page itself
     Wait Until Keyword Succeeds    20 times    3 seconds
-    ...    Launcher answers    /api/apps    401
-    ${body} =    Curl launcher body    /api/config
-    Should Contain    ${body}    ${PORTAL_URL}
+    ...    Launcher config contains    ${PORTAL_URL}
 
 Check if the password portal link is kept on reconfigure
     Run task    module/${module_id}/configure-module
@@ -76,3 +75,8 @@ Launcher answers
     [Arguments]    ${path}    ${expected}
     ${status} =    Curl launcher    ${path}
     Should Be Equal    ${status}    ${expected}
+
+Launcher config contains
+    [Arguments]    ${text}
+    ${body} =    Curl launcher body    /api/config
+    Should Contain    ${body}    ${text}
