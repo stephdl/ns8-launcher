@@ -8,6 +8,7 @@
             "lets_encrypt": true,
             "auth_mode": "ldap",
             "ldap_domain": "domain.org",
+            "password_portal_url": "https://node1.domain.org/users-admin/domain.org/",
             "ldap_domain_list": ["domain.org"]
         }
     ],
@@ -18,6 +19,7 @@
         "lets_encrypt": {"type": "boolean"},
         "auth_mode": {"type": "string", "enum": ["public", "ldap"]},
         "ldap_domain": {"type": "string"},
+        "password_portal_url": {"type": "string"},
         "ldap_domain_list": {"type": "array", "items": {"type": "string"}}
     }
 }

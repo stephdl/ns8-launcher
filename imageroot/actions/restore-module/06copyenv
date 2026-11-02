@@ -17,6 +17,7 @@ for evar in [
         "TRAEFIK_HOST",
         "AUTH_MODE",
         "LDAP_DOMAIN",
+        "PASSWORD_PORTAL_URL",
     ]:
     agent.set_env(evar, original_environment.get(evar, ""))
 

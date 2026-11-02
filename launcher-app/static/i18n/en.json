@@ -23,5 +23,6 @@
   "no_match": "No application matches your search.",
   "show_password": "Show password",
   "hide_password": "Hide password",
-  "remember": "Keep me logged in for 7 days"
+  "remember": "Keep me logged in for 7 days",
+  "change_password": "Change password"
 }

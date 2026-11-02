@@ -58,7 +58,13 @@
     "auth_mode_ldap": "LDAP : connexion obligatoire, applications filtrées par groupe",
     "ldap_domain": "Domaine utilisateurs",
     "choose_ldap_domain": "Choisir un domaine utilisateurs",
-    "ldap_domain_helper": "Les utilisateurs de ce domaine peuvent se connecter à la page launcher"
+    "ldap_domain_helper": "Les utilisateurs de ce domaine peuvent se connecter à la page launcher",
+    "password_portal": "Lien pour changer de mot de passe",
+    "password_portal_tips": "Les utilisateurs connectés voient un lien vers le portail utilisateur NS8, où ils peuvent changer leur mot de passe. Le portail doit être joignable par les utilisateurs.",
+    "password_portal_url": "URL du portail utilisateur",
+    "password_portal_url_pattern": "Doit être une URL https://",
+    "password_portal_suggested": "Déduite du node qui héberge le domaine utilisateur. Modifiez-la si les utilisateurs joignent ce node sous un autre nom.",
+    "password_portal_no_suggestion": "Aucun portail trouvé pour ce domaine : saisissez son URL"
   },
   "about": {
     "title": "À propos"
@@ -78,7 +84,9 @@
     "get-settings": "Lire les réglages du launcher",
     "set-settings": "Enregistrer les réglages du launcher",
     "refresh-apps": "Rafraîchir les applications",
-    "list-groups": "Lister les groupes"
+    "list-groups": "Lister les groupes",
+    "list-user-domains": "Lister les domaines utilisateurs",
+    "get-fqdn": "Lire le FQDN"
   },
   "error": {
     "error": "Erreur",

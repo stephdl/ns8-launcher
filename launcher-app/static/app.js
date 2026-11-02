@@ -90,6 +90,9 @@ function renderHeader() {
   $("user").hidden = !user;
   $("logout").hidden = !user;
   if (user) $("user").textContent = user.display_name || user.name;
+  const portal = /^https:\/\//.test(config.password_portal || "") ? config.password_portal : "";
+  $("change-password").hidden = !user || !portal;
+  if (portal) $("change-password").href = portal;
 
   const support = config.support || {};
   const links = $("support-links");

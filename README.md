@@ -39,6 +39,12 @@ The output returns the instance name, like `launcher1`.
 
 `auth_mode` is `public` or `ldap`. `ldap_domain` is required in `ldap` mode.
 
+In `ldap` mode, the optional `password_portal_url` adds a "Change password"
+button for logged in users. It points to the NS8 user portal, like
+`https://node1.example.org/users-admin/example.org/`. The admin UI proposes the
+same URL as the core domain page; users must be able to reach that host. An
+empty string removes the button, and the public mode clears it.
+
 The page content is set with `set-settings` and read with `get-settings`:
 welcome sentence, logo (base64 PNG or JPEG, 512 KB at most), support contacts,
 categories, external links, and per-application overrides (hidden, name,

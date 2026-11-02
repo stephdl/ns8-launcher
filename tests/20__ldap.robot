@@ -3,6 +3,9 @@ Library    SSHLibrary
 Resource    api.resource
 Resource    launcher.resource
 
+*** Variables ***
+${PORTAL_URL}    https://node.ns8-ci.test/users-admin/launcher.ns8-ci.test/
+
 *** Test Cases ***
 Check if the user domain is installed
     ${response} =    Run task    add-internal-provider    {"image":"openldap","node":1}
@@ -43,15 +46,37 @@ Check if repeated failures are blocked
     ${status} =    Login to launcher    alice    Nethesis,1234
     Should Be Equal    ${status}    429
 
+Check if the password portal link is published
+    Run task    module/${module_id}/configure-module
+    ...    {"host":"${TEST_HOST}","lets_encrypt":false,"auth_mode":"ldap","ldap_domain":"${USER_DOMAIN}","password_portal_url":"${PORTAL_URL}"}
+    ${config} =    Run task    module/${module_id}/get-configuration    {}
+    Should Be Equal    ${config}[password_portal_url]    ${PORTAL_URL}
+    # Same mode and domain keep the session alive, so wait for the restarted page itself
+    Wait Until Keyword Succeeds    20 times    3 seconds
+    ...    Launcher config contains    ${PORTAL_URL}
+
+Check if the password portal link is kept on reconfigure
+    Run task    module/${module_id}/configure-module
+    ...    {"host":"${TEST_HOST}","lets_encrypt":false,"auth_mode":"ldap","ldap_domain":"${USER_DOMAIN}"}
+    ${config} =    Run task    module/${module_id}/get-configuration    {}
+    Should Be Equal    ${config}[password_portal_url]    ${PORTAL_URL}
+
 Check if launcher goes back to public mode
     # Restart the container: it also clears the in-memory failure counters
     Run task    module/${module_id}/configure-module
     ...    {"host":"${TEST_HOST}","lets_encrypt":false,"auth_mode":"public","ldap_domain":""}
     Wait Until Keyword Succeeds    20 times    3 seconds
     ...    Launcher answers    /api/apps    200
+    ${config} =    Run task    module/${module_id}/get-configuration    {}
+    Should Be Empty    ${config}[password_portal_url]
 
 *** Keywords ***
 Launcher answers
     [Arguments]    ${path}    ${expected}
     ${status} =    Curl launcher    ${path}
     Should Be Equal    ${status}    ${expected}
+
+Launcher config contains
+    [Arguments]    ${text}
+    ${body} =    Curl launcher body    /api/config
+    Should Contain    ${body}    ${text}

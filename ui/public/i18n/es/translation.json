@@ -29,7 +29,13 @@
         "auth_mode_ldap": "LDAP: inicio de sesión obligatorio, las aplicaciones se filtran por grupo",
         "ldap_domain": "Dominio de usuarios",
         "choose_ldap_domain": "Elija un dominio de usuarios",
-        "ldap_domain_helper": "Los usuarios de este dominio pueden iniciar sesión en la página del launcher"
+        "ldap_domain_helper": "Los usuarios de este dominio pueden iniciar sesión en la página del launcher",
+        "password_portal": "Enlace para cambiar la contraseña",
+        "password_portal_tips": "Los usuarios conectados ven un enlace al portal de usuario de NS8, donde pueden cambiar su contraseña. Los usuarios deben poder acceder al portal.",
+        "password_portal_url": "URL del portal de usuario",
+        "password_portal_url_pattern": "Debe ser una URL https://",
+        "password_portal_suggested": "Tomada del nodo que aloja el dominio de usuarios. Cámbiela si los usuarios acceden a este nodo con otro nombre.",
+        "password_portal_no_suggestion": "No se encontró ningún portal para este dominio: escriba su URL"
     },
     "common": {
         "required": "Obligatorio",
@@ -80,7 +86,9 @@
         "get-settings": "Obtener ajustes del launcher",
         "set-settings": "Guardar ajustes del launcher",
         "refresh-apps": "Actualizar aplicaciones",
-        "list-groups": "Listar grupos"
+        "list-groups": "Listar grupos",
+        "list-user-domains": "Listar dominios de usuarios",
+        "get-fqdn": "Obtener FQDN"
     },
     "task": {
         "cannot_create_task": "No se puede crear la tarea {action}"

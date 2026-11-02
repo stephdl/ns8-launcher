@@ -8,7 +8,8 @@
             "host": "home.domain.org",
             "lets_encrypt": true,
             "auth_mode": "ldap",
-            "ldap_domain": "domain.org"
+            "ldap_domain": "domain.org",
+            "password_portal_url": "https://node1.domain.org/users-admin/domain.org/"
         },
         {
             "host": "home.domain.org",
@@ -44,6 +45,12 @@
         "ldap_domain": {
             "type": "string",
             "description": "User domain used to log in. Required when auth_mode is ldap."
+        },
+        "password_portal_url": {
+            "type": "string",
+            "maxLength": 500,
+            "pattern": "^(https://\\S+)?$",
+            "description": "Self-service portal where users change their password, shown in ldap mode. Empty hides the link. Omit it to keep the current value."
         }
     },
     "if": {
