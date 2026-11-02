@@ -3,7 +3,9 @@
   "description": {
     "en": "A home page listing every application published on the cluster, public or behind an LDAP login",
     "fr": "Une page d'accueil qui liste toutes les applications publiées sur le cluster, publique ou derrière un login LDAP",
-    "it": "Una home page con tutte le applicazioni pubblicate sul cluster, pubblica o protetta da login LDAP"
+    "it": "Una home page con tutte le applicazioni pubblicate sul cluster, pubblica o protetta da login LDAP",
+    "de": "Eine Startseite, die alle im Cluster veröffentlichten Anwendungen auflistet, öffentlich oder hinter einer LDAP-Anmeldung",
+    "es": "Una página de inicio que muestra todas las aplicaciones publicadas en el clúster, pública o detrás de un inicio de sesión LDAP"
   },
   "categories": [
     "web"

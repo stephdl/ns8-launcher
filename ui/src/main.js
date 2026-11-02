@@ -37,17 +37,23 @@ Vue.config.productionTip = false;
 
 // i18n
 import VueI18n from "vue-i18n";
-import { loadLanguage } from "./i18n";
+import { loadLanguage, pickLanguage } from "./i18n";
 
 loadI18n();
 
 async function loadI18n() {
-  const navigatorLang = navigator.language.substring(0, 2);
-  const messages = await loadLanguage(navigatorLang);
+  // Follow the language chosen in the NS8 admin, not the browser one
+  const core = window.parent.core;
+  const coreLocale = core && core.$i18n && core.$i18n.locale;
+  const lang = pickLanguage(coreLocale || navigator.language);
+  const english = await loadLanguage("en");
+  const messages = lang === "en" ? english : await loadLanguage(lang);
   Vue.use(VueI18n);
-  const i18n = new VueI18n();
-  i18n.setLocaleMessage(navigatorLang, messages.default);
-  i18n.locale = navigatorLang;
+  // A key not translated yet shows in English instead of its raw name
+  const i18n = new VueI18n({ fallbackLocale: "en", silentFallbackWarn: true });
+  i18n.setLocaleMessage("en", english.default);
+  i18n.setLocaleMessage(lang, messages.default);
+  i18n.locale = lang;
 
   new Vue({
     router,

@@ -23,13 +23,14 @@
       <cv-column>
         <cv-tile light>
           <h4 class="mg-bottom">{{ $t("support.contacts") }}</h4>
-          <cv-form class="maxwidth" @submit.prevent="saveSettings()">
+          <cv-form class="maxwidth" @submit.prevent="saveContacts">
             <NsTextInput
               v-model.trim="settings.support.url"
               :label="$t('support.url')"
               placeholder="https://support.example.org"
               :invalid-message="error.supportUrl"
               :disabled="loading.getSettings || loading.setSettings"
+              maxlength="500"
               class="mg-bottom"
             />
             <NsTextInput
@@ -37,19 +38,23 @@
               :label="$t('support.email')"
               placeholder="support@example.org"
               :disabled="loading.getSettings || loading.setSettings"
+              maxlength="200"
               class="mg-bottom"
             />
             <NsTextInput
               v-model.trim="settings.support.phone"
               :label="$t('support.phone')"
               :disabled="loading.getSettings || loading.setSettings"
+              maxlength="50"
               class="mg-bottom"
             />
             <NsButton
               kind="primary"
               :icon="Save20"
               :loading="loading.setSettings"
-              :disabled="loading.getSettings || loading.setSettings"
+              :disabled="
+                loading.getSettings || loading.setSettings || !!error.supportUrl
+              "
               >{{ $t("common.save") }}</NsButton
             >
           </cv-form>
@@ -127,6 +132,7 @@
             v-model.trim="editing.name"
             :label="$t('support.link_name')"
             :invalid-message="error.linkName"
+            maxlength="100"
             class="mg-bottom"
           />
           <NsTextInput
@@ -134,6 +140,7 @@
             :label="$t('support.link_url')"
             placeholder="https://"
             :invalid-message="error.linkUrl"
+            maxlength="500"
             class="mg-bottom"
           />
           <cv-select v-model="editing.category" :label="$t('apps.column_category')" class="mg-bottom">
@@ -205,6 +212,10 @@ export default {
     },
   },
   methods: {
+    // Every save sends the contacts too: never send an invalid support URL
+    saveContacts() {
+      return this.error.supportUrl ? false : this.saveSettings();
+    },
     editLink(index) {
       this.error.linkName = "";
       this.error.linkUrl = "";
@@ -221,12 +232,11 @@ export default {
       if (index >= 0) links.splice(index, 1, { ...links[index], ...link });
       else links.push(link);
       this.settings.links = links;
-      await this.saveSettings();
-      if (!this.error.setSettings) this.editing = null;
+      if (await this.saveContacts()) this.editing = null;
     },
     deleteLink(index) {
       this.settings.links = this.settings.links.filter((link, i) => i !== index);
-      this.saveSettings();
+      this.saveContacts();
     },
   },
 };

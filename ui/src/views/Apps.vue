@@ -116,6 +116,7 @@
             <NsTextInput
               v-model.trim="newCategory"
               :label="$t('apps.new_category')"
+              maxlength="50"
               :invalid-message="error.newCategory"
               :disabled="loading.setSettings"
             />
@@ -139,6 +140,7 @@
           <NsTextInput
             v-model.trim="editing.name"
             :label="$t('apps.name')"
+            maxlength="100"
             :helper-text="$t('apps.name_helper', { name: editing.discoveredName })"
             :placeholder="editing.discoveredName"
             class="mg-bottom"
@@ -343,8 +345,7 @@ export default {
     async saveApp() {
       const { id, name, category, groups, hidden } = this.editing;
       this.storeOverride(id, { name, category, groups, hidden });
-      await this.saveSettings();
-      if (!this.error.setSettings) {
+      if (await this.saveSettings()) {
         this.editing = null;
       }
     },
@@ -354,6 +355,10 @@ export default {
       this.saveSettings();
     },
     addCategory() {
+      // Enter in the field submits even when the button is disabled
+      if (!this.newCategory) {
+        return;
+      }
       this.error.newCategory = "";
       if (this.settings.categories.includes(this.newCategory)) {
         this.error.newCategory = this.$t("apps.category_exists");
