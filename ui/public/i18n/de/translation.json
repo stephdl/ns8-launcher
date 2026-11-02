@@ -9,17 +9,41 @@
         "network_timeout": "Netzwerk Timeout",
         "404": "Ressource nicht gefunden",
         "network_error": "Netzwerkfehler",
-        "validation_error": "Fehlerhafte Prüfung"
+        "validation_error": "Fehlerhafte Prüfung",
+        "cannot_retrieve_configuration": "Konfiguration kann nicht abgerufen werden"
     },
     "settings": {
         "configure_instance": "{instance} konfigurieren",
         "save": "Speichern",
-        "title": "Einstellungen"
+        "title": "Einstellungen",
+        "launcher_fqdn": "Hostname des Launchers (FQDN)",
+        "enabled": "Aktiviert",
+        "disabled": "Deaktiviert",
+        "configuring": "Wird konfiguriert",
+        "instance_configuration": "Launcher konfigurieren",
+        "domain_already_used_in_traefik": "Domain wird bereits in Traefik verwendet",
+        "host_pattern": "Muss ein gültiger vollqualifizierter Domainname sein",
+        "host_format": "Muss ein gültiger vollqualifizierter Domainname sein",
+        "auth_mode": "Zugriff",
+        "auth_mode_public": "Öffentlich: keine Anmeldung, jede Anwendung ist sichtbar",
+        "auth_mode_ldap": "LDAP: Anmeldung erforderlich, Anwendungen werden nach Gruppe gefiltert",
+        "ldap_domain": "Benutzerdomain",
+        "choose_ldap_domain": "Benutzerdomain wählen",
+        "ldap_domain_helper": "Benutzer dieser Domain können sich an der Launcher-Seite anmelden"
     },
     "common": {
         "required": "erforderlich",
         "work_in_progress": "In Arbeit",
-        "processing": "Ausführung..."
+        "processing": "Ausführung...",
+        "save": "Speichern",
+        "cancel": "Abbrechen",
+        "edit": "Bearbeiten",
+        "delete": "Löschen",
+        "yes": "Ja",
+        "no": "Nein",
+        "clear_search": "Suche löschen",
+        "no_search_results": "Keine Ergebnisse",
+        "no_search_results_description": "Versuchen Sie eine andere Suche"
     },
     "status": {
         "created": "erstellt",
@@ -35,7 +59,11 @@
         "title": "Status",
         "installation_node": "Knoten der Installation",
         "node": "Knoten",
-        "no_volumes": "keine Volumen"
+        "no_volumes": "keine Volumen",
+        "launcher_webapp": "Launcher-Seite",
+        "not_configured": "Nicht konfiguriert",
+        "open_webapp": "Launcher öffnen",
+        "configure": "Konfigurieren"
     },
     "about": {
         "title": "Über"
@@ -48,9 +76,79 @@
         "get-status": "Status abfragen",
         "configure-module": "Modul konfigurieren",
         "get-configuration": "Konfiguration abrufen",
-        "get-name": "Name abrufen"
+        "get-name": "Name abrufen",
+        "get-settings": "Launcher-Einstellungen abrufen",
+        "set-settings": "Launcher-Einstellungen speichern",
+        "refresh-apps": "Anwendungen aktualisieren",
+        "list-groups": "Gruppen auflisten"
     },
     "task": {
         "cannot_create_task": "{task} kann nicht erstellt werden"
+    },
+    "pagination": {
+        "items_per_page": "Einträge pro Seite:",
+        "range_of_total_items": "{range} von {total} Einträgen",
+        "of_total_pages": "von {total} Seiten",
+        "previous_page": "Vorherige Seite",
+        "next_page": "Nächste Seite",
+        "page_number": "Seitennummer"
+    },
+    "apps": {
+        "title": "Apps",
+        "description": "Hier wird jede Traefik-Route des Clusters mit einem Hostnamen aufgelistet. Die Liste folgt Routenänderungen von selbst; mit Aktualisieren wird sie sofort aktualisiert.",
+        "refresh": "Aktualisieren",
+        "search": "Apps suchen",
+        "no_apps": "Keine Anwendung gefunden",
+        "no_apps_description": "Installieren Sie eine Anwendung mit einem Hostnamen oder klicken Sie auf Aktualisieren.",
+        "column_name": "Name",
+        "column_host": "Host",
+        "column_category": "Kategorie",
+        "column_groups": "Gruppen",
+        "hidden": "Ausgeblendet",
+        "everyone": "Alle",
+        "show": "Anzeigen",
+        "hide": "Ausblenden",
+        "edit_app": "{host} bearbeiten",
+        "name": "Anzeigename",
+        "name_helper": "Leer lassen, um {name} zu verwenden",
+        "category": "Kategorie",
+        "no_category": "Keine Kategorie",
+        "groups": "Erlaubte Gruppen",
+        "groups_placeholder": "Gruppen wählen",
+        "groups_helper": "Leer lassen, um die App jedem angemeldeten Benutzer anzuzeigen",
+        "hide_app": "Diese Anwendung ausblenden",
+        "categories": "Kategorien",
+        "categories_description": "Kategorien gruppieren die Karten auf der Launcher-Seite.",
+        "new_category": "Neue Kategorie",
+        "add_category": "Kategorie hinzufügen",
+        "category_exists": "Diese Kategorie existiert bereits",
+        "cannot_list_groups": "Die Gruppen der Benutzerdomain können nicht aufgelistet werden"
+    },
+    "appearance": {
+        "title": "Erscheinungsbild",
+        "welcome": "Begrüßungssatz",
+        "welcome_default": "Willkommen in Ihrem NethServer 8 Cluster",
+        "welcome_helper": "Leer lassen, um den Standardsatz in der Sprache jedes Besuchers anzuzeigen",
+        "logo": "Logo",
+        "upload_logo": "Logo hochladen",
+        "logo_helper": "PNG oder JPEG, höchstens 512 KB",
+        "reset_logo": "Standardlogo wiederherstellen",
+        "logo_invalid_format": "Das Logo muss ein PNG- oder JPEG-Bild sein",
+        "logo_too_large": "Das Logo darf höchstens 512 KB groß sein"
+    },
+    "support": {
+        "title": "Support und Links",
+        "contacts": "Support-Kontakte",
+        "url": "Ticketsystem-URL",
+        "email": "Support-E-Mail",
+        "phone": "Support-Telefon",
+        "invalid_url": "Muss mit http:// oder https:// beginnen",
+        "links": "Externe Links",
+        "links_description": "Links zu Seiten außerhalb des Clusters, die neben den Anwendungen angezeigt werden.",
+        "add_link": "Link hinzufügen",
+        "edit_link": "Link bearbeiten",
+        "link_name": "Name",
+        "link_url": "URL",
+        "no_links": "Keine externen Links"
     }
 }

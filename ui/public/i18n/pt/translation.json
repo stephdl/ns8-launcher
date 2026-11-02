@@ -9,17 +9,41 @@
         "network_timeout": "Tempo limite da rede",
         "404": "Recurso não encontrado",
         "network_error": "Erro de rede",
-        "validation_error": "Erros de validação"
+        "validation_error": "Erros de validação",
+        "cannot_retrieve_configuration": "Não é possível obter a configuração"
     },
     "settings": {
-        "configure_instance": "Configurar {instância}",
+        "configure_instance": "Configurar {instance}",
         "save": "Gravar",
-        "title": "Configurações"
+        "title": "Configurações",
+        "launcher_fqdn": "Nome de anfitrião do launcher (FQDN)",
+        "enabled": "Ativado",
+        "disabled": "Desativado",
+        "configuring": "A configurar",
+        "instance_configuration": "Configurar launcher",
+        "domain_already_used_in_traefik": "Domínio já utilizado no traefik",
+        "host_pattern": "Deve ser um nome de domínio completo válido",
+        "host_format": "Deve ser um nome de domínio completo válido",
+        "auth_mode": "Acesso",
+        "auth_mode_public": "Público: sem início de sessão, todas as aplicações são visíveis",
+        "auth_mode_ldap": "LDAP: início de sessão obrigatório, as aplicações são filtradas por grupo",
+        "ldap_domain": "Domínio de utilizadores",
+        "choose_ldap_domain": "Escolha um domínio de utilizadores",
+        "ldap_domain_helper": "Os utilizadores deste domínio podem iniciar sessão na página do launcher"
     },
     "common": {
         "required": "Obrigatório",
         "work_in_progress": "Trabalho em progresso",
-        "processing": "Processando..."
+        "processing": "Processando...",
+        "save": "Gravar",
+        "cancel": "Cancelar",
+        "edit": "Editar",
+        "delete": "Eliminar",
+        "yes": "Sim",
+        "no": "Não",
+        "clear_search": "Limpar pesquisa",
+        "no_search_results": "Sem resultados",
+        "no_search_results_description": "Experimente outra pesquisa"
     },
     "status": {
         "created": "Criado",
@@ -35,7 +59,11 @@
         "title": "Estado",
         "installation_node": "Nó de instalação",
         "node": "Node",
-        "no_volumes": "Sem volumes"
+        "no_volumes": "Sem volumes",
+        "launcher_webapp": "Página do launcher",
+        "not_configured": "Não configurado",
+        "open_webapp": "Abrir launcher",
+        "configure": "Configurar"
     },
     "about": {
         "title": "Sobre"
@@ -48,9 +76,79 @@
         "get-status": "Obter status",
         "configure-module": "Configurar módulo",
         "get-configuration": "Obter configuração",
-        "get-name": "Obter nome"
+        "get-name": "Obter nome",
+        "get-settings": "Obter definições do launcher",
+        "set-settings": "Gravar definições do launcher",
+        "refresh-apps": "Atualizar aplicações",
+        "list-groups": "Listar grupos"
     },
     "task": {
         "cannot_create_task": "Não é possível criar a tarefa {action}"
+    },
+    "pagination": {
+        "items_per_page": "Itens por página:",
+        "range_of_total_items": "{range} de {total} itens",
+        "of_total_pages": "de {total} páginas",
+        "previous_page": "Página anterior",
+        "next_page": "Página seguinte",
+        "page_number": "Número da página"
+    },
+    "apps": {
+        "title": "Aplicações",
+        "description": "Aqui são listadas todas as rotas Traefik do cluster com um nome de anfitrião. A lista acompanha sozinha as alterações das rotas; use Atualizar para a atualizar agora.",
+        "refresh": "Atualizar",
+        "search": "Pesquisar aplicações",
+        "no_apps": "Nenhuma aplicação encontrada",
+        "no_apps_description": "Instale uma aplicação com um nome de anfitrião ou carregue em Atualizar.",
+        "column_name": "Nome",
+        "column_host": "Anfitrião",
+        "column_category": "Categoria",
+        "column_groups": "Grupos",
+        "hidden": "Oculta",
+        "everyone": "Todos",
+        "show": "Mostrar",
+        "hide": "Ocultar",
+        "edit_app": "Editar {host}",
+        "name": "Nome apresentado",
+        "name_helper": "Deixe vazio para usar {name}",
+        "category": "Categoria",
+        "no_category": "Sem categoria",
+        "groups": "Grupos autorizados",
+        "groups_placeholder": "Escolha os grupos",
+        "groups_helper": "Deixe vazio para mostrar a aplicação a todos os utilizadores com sessão iniciada",
+        "hide_app": "Ocultar esta aplicação",
+        "categories": "Categorias",
+        "categories_description": "As categorias agrupam os cartões na página do launcher.",
+        "new_category": "Nova categoria",
+        "add_category": "Adicionar categoria",
+        "category_exists": "Esta categoria já existe",
+        "cannot_list_groups": "Não é possível listar os grupos do domínio de utilizadores"
+    },
+    "appearance": {
+        "title": "Aspeto",
+        "welcome": "Frase de boas-vindas",
+        "welcome_default": "Bem-vindo ao seu cluster NethServer 8",
+        "welcome_helper": "Deixe vazio para mostrar a frase predefinida no idioma de cada visitante",
+        "logo": "Logótipo",
+        "upload_logo": "Carregar um logótipo",
+        "logo_helper": "PNG ou JPEG, no máximo 512 KB",
+        "reset_logo": "Repor o logótipo predefinido",
+        "logo_invalid_format": "O logótipo deve ser uma imagem PNG ou JPEG",
+        "logo_too_large": "O logótipo deve ter no máximo 512 KB"
+    },
+    "support": {
+        "title": "Suporte e ligações",
+        "contacts": "Contactos de suporte",
+        "url": "URL de pedidos de suporte",
+        "email": "Email de suporte",
+        "phone": "Telefone de suporte",
+        "invalid_url": "Deve começar por http:// ou https://",
+        "links": "Ligações externas",
+        "links_description": "Ligações para sites fora do cluster, mostradas junto com as aplicações.",
+        "add_link": "Adicionar ligação",
+        "edit_link": "Editar ligação",
+        "link_name": "Nome",
+        "link_url": "URL",
+        "no_links": "Sem ligações externas"
     }
 }
