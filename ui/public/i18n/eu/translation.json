@@ -9,17 +9,41 @@
         "network_timeout": "Sarearen denbora-muga",
         "404": "Baliabidea ez da aurkitu",
         "network_error": "Sare-errorea",
-        "validation_error": "Balioztatze-errorea"
+        "validation_error": "Balioztatze-errorea",
+        "cannot_retrieve_configuration": "Ezin da konfigurazioa eskuratu"
     },
     "settings": {
         "configure_instance": "{instance} konfiguratu",
         "save": "Gorde",
-        "title": "Ezarpenak"
+        "title": "Ezarpenak",
+        "launcher_fqdn": "Launcherraren ostalari-izena (FQDN)",
+        "enabled": "Gaituta",
+        "disabled": "Desgaituta",
+        "configuring": "Konfiguratzen",
+        "instance_configuration": "Konfiguratu launcherra",
+        "domain_already_used_in_traefik": "Domeinua traefik-en erabiltzen ari da dagoeneko",
+        "host_pattern": "Domeinu-izen oso baliozkoa izan behar du",
+        "host_format": "Domeinu-izen oso baliozkoa izan behar du",
+        "auth_mode": "Sarbidea",
+        "auth_mode_public": "Publikoa: saioa hasi gabe, aplikazio guztiak ikusgai daude",
+        "auth_mode_ldap": "LDAP: saioa hasi behar da, aplikazioak taldeka iragazten dira",
+        "ldap_domain": "Erabiltzaile-domeinua",
+        "choose_ldap_domain": "Aukeratu erabiltzaile-domeinu bat",
+        "ldap_domain_helper": "Domeinu honetako erabiltzaileek launcher orrian saioa has dezakete"
     },
     "common": {
         "required": "Beharrezkoa",
         "work_in_progress": "Lanak martxan",
-        "processing": "Prozesatzen..."
+        "processing": "Prozesatzen...",
+        "save": "Gorde",
+        "cancel": "Utzi",
+        "edit": "Editatu",
+        "delete": "Ezabatu",
+        "yes": "Bai",
+        "no": "Ez",
+        "clear_search": "Garbitu bilaketa",
+        "no_search_results": "Emaitzarik ez",
+        "no_search_results_description": "Saiatu beste bilaketa batekin"
     },
     "status": {
         "created": "Sortuta",
@@ -35,7 +59,11 @@
         "title": "Egoera",
         "installation_node": "Instalazio-nodoa",
         "node": "Nodoa",
-        "no_volumes": "Bolumenik ez"
+        "no_volumes": "Bolumenik ez",
+        "launcher_webapp": "Launcher orria",
+        "not_configured": "Konfiguratu gabe",
+        "open_webapp": "Ireki launcherra",
+        "configure": "Konfiguratu"
     },
     "about": {
         "title": "Honi buruz"
@@ -48,9 +76,79 @@
         "get-status": "Egoera berreskuratu",
         "configure-module": "Modulua konfiguratu",
         "get-configuration": "Konfigurazioa berreskuratu",
-        "get-name": "Izena berreskuratu"
+        "get-name": "Izena berreskuratu",
+        "get-settings": "Lortu launcherraren ezarpenak",
+        "set-settings": "Gorde launcherraren ezarpenak",
+        "refresh-apps": "Freskatu aplikazioak",
+        "list-groups": "Zerrendatu taldeak"
     },
     "task": {
         "cannot_create_task": "Ezin da zeregina {action} sortu"
+    },
+    "pagination": {
+        "items_per_page": "Elementuak orriko:",
+        "range_of_total_items": "{range} / {total} elementu",
+        "of_total_pages": "/ {total} orri",
+        "previous_page": "Aurreko orria",
+        "next_page": "Hurrengo orria",
+        "page_number": "Orri-zenbakia"
+    },
+    "apps": {
+        "title": "Aplikazioak",
+        "description": "Hemen zerrendatzen dira klusterreko ostalari-izena duten Traefik bide guztiak. Zerrendak bideen aldaketak berez jarraitzen ditu; erabili Freskatu orain eguneratzeko.",
+        "refresh": "Freskatu",
+        "search": "Bilatu aplikazioak",
+        "no_apps": "Ez da aplikaziorik aurkitu",
+        "no_apps_description": "Instalatu ostalari-izena duen aplikazio bat, edo sakatu Freskatu.",
+        "column_name": "Izena",
+        "column_host": "Ostalaria",
+        "column_category": "Kategoria",
+        "column_groups": "Taldeak",
+        "hidden": "Ezkutatuta",
+        "everyone": "Denak",
+        "show": "Erakutsi",
+        "hide": "Ezkutatu",
+        "edit_app": "Editatu {host}",
+        "name": "Bistaratzeko izena",
+        "name_helper": "Utzi hutsik {name} erabiltzeko",
+        "category": "Kategoria",
+        "no_category": "Kategoriarik ez",
+        "groups": "Baimendutako taldeak",
+        "groups_placeholder": "Aukeratu taldeak",
+        "groups_helper": "Utzi hutsik aplikazioa saioa hasita duen erabiltzaile orori erakusteko",
+        "hide_app": "Ezkutatu aplikazio hau",
+        "categories": "Kategoriak",
+        "categories_description": "Kategoriek launcher orriko txartelak multzokatzen dituzte.",
+        "new_category": "Kategoria berria",
+        "add_category": "Gehitu kategoria",
+        "category_exists": "Kategoria hau badago dagoeneko",
+        "cannot_list_groups": "Ezin dira erabiltzaile-domeinuko taldeak zerrendatu"
+    },
+    "appearance": {
+        "title": "Itxura",
+        "welcome": "Ongietorri-esaldia",
+        "welcome_default": "Ongi etorri zure NethServer 8 klusterrera",
+        "welcome_helper": "Utzi hutsik bisitari bakoitzaren hizkuntzako esaldi lehenetsia erakusteko",
+        "logo": "Logotipoa",
+        "upload_logo": "Igo logotipo bat",
+        "logo_helper": "PNG edo JPEG, gehienez 512 KB",
+        "reset_logo": "Leheneratu logotipo lehenetsia",
+        "logo_invalid_format": "Logotipoak PNG edo JPEG irudia izan behar du",
+        "logo_too_large": "Logotipoak gehienez 512 KB izan behar ditu"
+    },
+    "support": {
+        "title": "Laguntza eta estekak",
+        "contacts": "Laguntza-kontaktuak",
+        "url": "Txartel-sistemaren URLa",
+        "email": "Laguntzako posta elektronikoa",
+        "phone": "Laguntzako telefonoa",
+        "invalid_url": "http:// edo https:// hasiera izan behar du",
+        "links": "Kanpoko estekak",
+        "links_description": "Klusterretik kanpoko guneetarako estekak, aplikazioekin batera erakusten dira.",
+        "add_link": "Gehitu esteka",
+        "edit_link": "Editatu esteka",
+        "link_name": "Izena",
+        "link_url": "URLa",
+        "no_links": "Kanpoko estekarik ez"
     }
 }
