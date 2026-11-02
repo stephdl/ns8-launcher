@@ -190,7 +190,11 @@
               kind="primary"
               :icon="Save20"
               :loading="loading.configureModule"
-              :disabled="loading.getConfiguration || loading.configureModule"
+              :disabled="
+                loading.getConfiguration ||
+                loading.configureModule ||
+                loading.suggestPasswordPortal
+              "
               >{{ $t("settings.save") }}</NsButton
             >
           </cv-form>
@@ -247,6 +251,7 @@ export default {
         getStatus: false,
         suggestPasswordPortal: false,
       },
+      suggestToken: 0,
       error: {
         getConfiguration: "",
         configureModule: "",
@@ -266,6 +271,9 @@ export default {
       }
     },
     ldapDomain(domain) {
+      // Drop any suggestion still running for the previous domain
+      this.suggestToken++;
+      this.loading.suggestPasswordPortal = false;
       if (!this.isPasswordPortalEnabled || !domain) {
         return;
       }
@@ -318,13 +326,23 @@ export default {
     taskOutput(createTask, action) {
       return new Promise((resolve, reject) => {
         const eventId = this.getUuid();
+        const events = ["completed", "aborted", "validation-failed"].map(
+          (state) => `${action}-${state}-${eventId}`
+        );
+        // Only one of the events fires: remove the other listeners too
+        const settle =
+          (callback) =>
+          (...args) => {
+            events.forEach((event) => this.core.$root.$off(event));
+            callback(...args);
+          };
+        const fail = settle(() => reject(new Error(action)));
         this.core.$root.$once(
-          `${action}-completed-${eventId}`,
-          (taskContext, taskResult) => resolve(taskResult.output)
+          events[0],
+          settle((taskContext, taskResult) => resolve(taskResult.output))
         );
-        this.core.$root.$once(`${action}-aborted-${eventId}`, () =>
-          reject(new Error(action))
-        );
+        this.core.$root.$once(events[1], fail);
+        this.core.$root.$once(events[2], fail);
         createTask({
           action,
           extra: {
@@ -332,13 +350,17 @@ export default {
             isNotificationHidden: true,
             eventId,
           },
-        }).catch(reject);
+        }).catch(fail);
       });
     },
     // Same URL as the "User portal" link of the core domain page:
     // the FQDN of the node running the first provider of the domain
     async suggestPasswordPortal() {
       const domain = this.ldapDomain;
+      if (!domain) {
+        return;
+      }
+      const token = ++this.suggestToken;
       this.loading.suggestPasswordPortal = true;
       this.passwordPortalHelper = "";
       let url = "";
@@ -363,7 +385,7 @@ export default {
         console.error("cannot suggest the password portal", err);
       }
       // The admin may have picked another domain meanwhile
-      if (domain !== this.ldapDomain) {
+      if (token !== this.suggestToken) {
         return;
       }
       this.loading.suggestPasswordPortal = false;

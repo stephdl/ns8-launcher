@@ -49,7 +49,7 @@
         "password_portal_url": {
             "type": "string",
             "maxLength": 500,
-            "pattern": "^(https://.+)?$",
+            "pattern": "^(https://\\S+)?$",
             "description": "Self-service portal where users change their password, shown in ldap mode. Empty hides the link. Omit it to keep the current value."
         }
     },

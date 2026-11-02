@@ -56,6 +56,12 @@ Check if the password portal link is published
     ${body} =    Curl launcher body    /api/config
     Should Contain    ${body}    ${PORTAL_URL}
 
+Check if the password portal link is kept on reconfigure
+    Run task    module/${module_id}/configure-module
+    ...    {"host":"${TEST_HOST}","lets_encrypt":false,"auth_mode":"ldap","ldap_domain":"${USER_DOMAIN}"}
+    ${config} =    Run task    module/${module_id}/get-configuration    {}
+    Should Be Equal    ${config}[password_portal_url]    ${PORTAL_URL}
+
 Check if launcher goes back to public mode
     # Restart the container: it also clears the in-memory failure counters
     Run task    module/${module_id}/configure-module
