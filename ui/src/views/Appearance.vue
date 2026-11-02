@@ -181,8 +181,7 @@ export default {
     },
     async save() {
       const extra = this.logoData === null ? {} : { logo: this.logoData };
-      await this.saveSettings(extra);
-      if (!this.error.setSettings) {
+      if (await this.saveSettings(extra)) {
         this.logoData = null;
         this.logoPreview = "";
         this.logoReset = false;

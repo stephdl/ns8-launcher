@@ -212,9 +212,9 @@ export default {
     },
   },
   methods: {
-    // Enter in a field submits even when the button is disabled
+    // Every save sends the contacts too: never send an invalid support URL
     saveContacts() {
-      if (!this.error.supportUrl) this.saveSettings();
+      return this.error.supportUrl ? false : this.saveSettings();
     },
     editLink(index) {
       this.error.linkName = "";
@@ -232,12 +232,11 @@ export default {
       if (index >= 0) links.splice(index, 1, { ...links[index], ...link });
       else links.push(link);
       this.settings.links = links;
-      await this.saveSettings();
-      if (!this.error.setSettings) this.editing = null;
+      if (await this.saveContacts()) this.editing = null;
     },
     deleteLink(index) {
       this.settings.links = this.settings.links.filter((link, i) => i !== index);
-      this.saveSettings();
+      this.saveContacts();
     },
   },
 };

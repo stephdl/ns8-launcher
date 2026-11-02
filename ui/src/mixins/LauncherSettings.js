@@ -77,31 +77,43 @@ export default {
         this.loading.getSettings = false;
       }
     },
+    // Resolves once the task ends, true when the settings were saved
     async saveSettings(extra = {}) {
+      // Enter in a field submits the form even while a save is running
+      if (this.loading.setSettings) {
+        return false;
+      }
       this.loading.setSettings = true;
       this.error.setSettings = "";
+      let settle;
+      const done = new Promise((resolve) => (settle = resolve));
       const [err] = await this.runTask(
         "set-settings",
         { ...this.settings, ...extra },
         () => {
           this.loading.setSettings = false;
           this.getSettings();
+          settle(true);
         },
         () => {
           this.error.setSettings = this.$t("error.generic_error");
           this.loading.setSettings = false;
+          settle(false);
         },
         (validationErrors) => {
           this.loading.setSettings = false;
           this.error.setSettings = validationErrors
             .map((e) => this.$t("settings." + e.error))
             .join(", ");
+          settle(false);
         }
       );
       if (err) {
         this.error.setSettings = this.getErrorMessage(err);
         this.loading.setSettings = false;
+        return false;
       }
+      return done;
     },
   },
 };

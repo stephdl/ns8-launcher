@@ -37,14 +37,15 @@ Vue.config.productionTip = false;
 
 // i18n
 import VueI18n from "vue-i18n";
-import { loadLanguage } from "./i18n";
+import { loadLanguage, pickLanguage } from "./i18n";
 
 loadI18n();
 
 async function loadI18n() {
   // Follow the language chosen in the NS8 admin, not the browser one
-  const coreLocale = window.parent.core && window.parent.core.$i18n.locale;
-  const lang = (coreLocale || navigator.language).substring(0, 2);
+  const core = window.parent.core;
+  const coreLocale = core && core.$i18n && core.$i18n.locale;
+  const lang = pickLanguage(coreLocale || navigator.language);
   const english = await loadLanguage("en");
   const messages = lang === "en" ? english : await loadLanguage(lang);
   Vue.use(VueI18n);
