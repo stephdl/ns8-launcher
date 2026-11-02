@@ -23,5 +23,6 @@
   "no_match": "Keine Anwendung entspricht Ihrer Suche.",
   "show_password": "Passwort anzeigen",
   "hide_password": "Passwort verbergen",
-  "remember": "7 Tage angemeldet bleiben"
+  "remember": "7 Tage angemeldet bleiben",
+  "change_password": "Passwort ändern"
 }

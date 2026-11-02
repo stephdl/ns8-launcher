@@ -21,6 +21,9 @@ access_changed = (os.environ.get("AUTH_MODE"), os.environ.get("LDAP_DOMAIN", "")
 agent.set_env("TRAEFIK_HOST", data["host"])
 agent.set_env("AUTH_MODE", data["auth_mode"])
 agent.set_env("LDAP_DOMAIN", ldap_domain)
+# A portal belongs to one user domain: it cannot outlive the LDAP mode
+portal_url = data.get("password_portal_url", os.environ.get("PASSWORD_PORTAL_URL", "")) if ldap_domain else ""
+agent.set_env("PASSWORD_PORTAL_URL", portal_url)
 agent.bind_user_domains([ldap_domain] if ldap_domain else [])
 
 # Session cookies are signed with this key: keep it out of Redis, which every module can read

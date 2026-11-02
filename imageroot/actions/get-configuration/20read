@@ -17,6 +17,7 @@ config = {
     "lets_encrypt": agent.get_route(os.environ['MODULE_ID']).get('lets_encrypt', False),
     "auth_mode": os.getenv("AUTH_MODE", "public"),
     "ldap_domain": os.getenv("LDAP_DOMAIN", ""),
+    "password_portal_url": os.getenv("PASSWORD_PORTAL_URL", ""),
     "ldap_domain_list": sorted(Ldapproxy().get_domains_list()),
 }
 json.dump(config, fp=sys.stdout)

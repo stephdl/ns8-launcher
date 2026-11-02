@@ -27,6 +27,7 @@ STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
 LISTEN_PORT = int(os.environ.get("LAUNCHER_PORT", "8080"))
 
 AUTH_MODE = os.environ.get("AUTH_MODE", "public")
+PASSWORD_PORTAL_URL = os.environ.get("PASSWORD_PORTAL_URL", "")
 SESSION_SECRET = os.environ.get("SESSION_SECRET", "").encode()
 SESSION_COOKIE = "launcher_session"
 SESSION_TTL = 8 * 3600
@@ -395,6 +396,7 @@ class Handler(BaseHTTPRequestHandler):
             "auth_mode": AUTH_MODE,
             "welcome": settings.get("welcome", ""),
             "support": settings.get("support", {}),
+            "password_portal": PASSWORD_PORTAL_URL if AUTH_MODE == "ldap" else "",
             "user": {"name": session["u"], "display_name": session["n"]} if session else None,
         })
 

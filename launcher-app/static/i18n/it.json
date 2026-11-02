@@ -23,5 +23,6 @@
   "no_match": "Nessuna applicazione corrisponde alla ricerca.",
   "show_password": "Mostra password",
   "hide_password": "Nascondi password",
-  "remember": "Resta connesso per 7 giorni"
+  "remember": "Resta connesso per 7 giorni",
+  "change_password": "Cambia password"
 }

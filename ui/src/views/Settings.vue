@@ -114,6 +114,36 @@
               class="mg-bottom maxwidth"
               ref="ldap_domain"
             />
+            <template v-if="authMode === 'ldap'">
+              <NsToggle
+                value="passwordPortal"
+                :label="$t('settings.password_portal')"
+                v-model="isPasswordPortalEnabled"
+                :disabled="stillLoading"
+                class="mg-bottom"
+              >
+                <template #tooltip>
+                  {{ $t("settings.password_portal_tips") }}
+                </template>
+                <template slot="text-left">{{
+                  $t("settings.disabled")
+                }}</template>
+                <template slot="text-right">{{
+                  $t("settings.enabled")
+                }}</template>
+              </NsToggle>
+              <NsTextInput
+                v-if="isPasswordPortalEnabled"
+                v-model.trim="passwordPortalUrl"
+                :label="$t('settings.password_portal_url')"
+                placeholder="https://node.example.org/users-admin/example.org/"
+                :helper-text="passwordPortalHelper"
+                :invalid-message="error.password_portal_url"
+                :disabled="stillLoading || loading.suggestPasswordPortal"
+                class="mg-bottom maxwidth"
+                ref="password_portal_url"
+              />
+            </template>
             <cv-row v-if="error.configureModule">
               <cv-column>
                 <NsInlineNotification
@@ -207,10 +237,15 @@ export default {
       authMode: "public",
       ldapDomain: "",
       ldapDomainList: [],
+      isPasswordPortalEnabled: false,
+      passwordPortalUrl: "",
+      passwordPortalHelper: "",
+      configured: { ldapDomain: "", passwordPortalUrl: "" },
       loading: {
         getConfiguration: false,
         configureModule: false,
         getStatus: false,
+        suggestPasswordPortal: false,
       },
       error: {
         getConfiguration: "",
@@ -219,14 +254,40 @@ export default {
         lets_encrypt: "",
         auth_mode: "",
         ldap_domain: "",
+        password_portal_url: "",
         getStatus: "",
       },
     };
   },
+  watch: {
+    isPasswordPortalEnabled(enabled) {
+      if (enabled && !this.passwordPortalUrl) {
+        this.suggestPasswordPortal();
+      }
+    },
+    ldapDomain(domain) {
+      if (!this.isPasswordPortalEnabled || !domain) {
+        return;
+      }
+      // A portal URL belongs to one domain: propose a new one when the domain changes
+      if (
+        domain === this.configured.ldapDomain &&
+        this.configured.passwordPortalUrl
+      ) {
+        this.passwordPortalUrl = this.configured.passwordPortalUrl;
+      } else {
+        this.suggestPasswordPortal();
+      }
+    },
+  },
   computed: {
     ...mapState(["instanceName", "core", "appName"]),
     domainOptions() {
-      return this.ldapDomainList.map((domain) => ({ name: domain, label: domain, value: domain }));
+      return this.ldapDomainList.map((domain) => ({
+        name: domain,
+        label: domain,
+        value: domain,
+      }));
     },
     stillLoading() {
       return (
@@ -253,6 +314,63 @@ export default {
   methods: {
     goToCertificates() {
       this.core.$router.push("/settings/tls-certificates");
+    },
+    taskOutput(createTask, action) {
+      return new Promise((resolve, reject) => {
+        const eventId = this.getUuid();
+        this.core.$root.$once(
+          `${action}-completed-${eventId}`,
+          (taskContext, taskResult) => resolve(taskResult.output)
+        );
+        this.core.$root.$once(`${action}-aborted-${eventId}`, () =>
+          reject(new Error(action))
+        );
+        createTask({
+          action,
+          extra: {
+            title: this.$t("action." + action),
+            isNotificationHidden: true,
+            eventId,
+          },
+        }).catch(reject);
+      });
+    },
+    // Same URL as the "User portal" link of the core domain page:
+    // the FQDN of the node running the first provider of the domain
+    async suggestPasswordPortal() {
+      const domain = this.ldapDomain;
+      this.loading.suggestPasswordPortal = true;
+      this.passwordPortalHelper = "";
+      let url = "";
+      try {
+        const output = await this.taskOutput(
+          (task) => this.createClusterTaskForApp(task),
+          "list-user-domains"
+        );
+        const found = output.domains.find((d) => d.name === domain);
+        const provider =
+          found &&
+          found.location === "internal" &&
+          found.providers.find((p) => p.node);
+        if (provider) {
+          const fqdn = await this.taskOutput(
+            (task) => this.createNodeTaskForApp(provider.node, task),
+            "get-fqdn"
+          );
+          url = `https://${fqdn.hostname}.${fqdn.domain}/users-admin/${domain}/`;
+        }
+      } catch (err) {
+        console.error("cannot suggest the password portal", err);
+      }
+      // The admin may have picked another domain meanwhile
+      if (domain !== this.ldapDomain) {
+        return;
+      }
+      this.loading.suggestPasswordPortal = false;
+      this.passwordPortalUrl = url;
+      this.passwordPortalHelper = url
+        ? this.$t("settings.password_portal_suggested")
+        : this.$t("settings.password_portal_no_suggestion");
     },
     async getStatus() {
       this.loading.getStatus = true;
@@ -346,6 +464,13 @@ export default {
       this.authMode = config.auth_mode;
       this.ldapDomain = config.ldap_domain;
       this.ldapDomainList = config.ldap_domain_list;
+      this.configured = {
+        ldapDomain: config.ldap_domain,
+        passwordPortalUrl: config.password_portal_url || "",
+      };
+      this.passwordPortalUrl = this.configured.passwordPortalUrl;
+      this.isPasswordPortalEnabled = !!this.passwordPortalUrl;
+      this.passwordPortalHelper = "";
 
       this.loading.getConfiguration = false;
       this.focusElement("host");
@@ -368,6 +493,21 @@ export default {
           this.focusElement("ldap_domain");
         }
         isValidationOk = false;
+      }
+      if (this.authMode === "ldap" && this.isPasswordPortalEnabled) {
+        if (!this.passwordPortalUrl) {
+          this.error.password_portal_url = this.$t("common.required");
+        } else if (!/^https:\/\/\S+$/.test(this.passwordPortalUrl)) {
+          this.error.password_portal_url = this.$t(
+            "settings.password_portal_url_pattern"
+          );
+        }
+        if (this.error.password_portal_url) {
+          if (isValidationOk) {
+            this.focusElement("password_portal_url");
+          }
+          isValidationOk = false;
+        }
       }
       return isValidationOk;
     },
@@ -426,6 +566,10 @@ export default {
             lets_encrypt: this.isLetsEncryptEnabled,
             auth_mode: this.authMode,
             ldap_domain: this.authMode === "ldap" ? this.ldapDomain : "",
+            password_portal_url:
+              this.authMode === "ldap" && this.isPasswordPortalEnabled
+                ? this.passwordPortalUrl
+                : "",
           },
           extra: {
             title: this.$t("settings.instance_configuration", {
