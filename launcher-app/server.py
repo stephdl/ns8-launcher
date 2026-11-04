@@ -16,7 +16,6 @@ import sys
 import threading
 import time
 from http import HTTPStatus
-from http.cookies import SimpleCookie
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 import ldap3
@@ -302,14 +301,20 @@ class Handler(BaseHTTPRequestHandler):
         with open(path, "rb") as fp:
             self.send(HTTPStatus.OK, fp.read(), content_type)
 
+    def session_cookie_value(self):
+        # SimpleCookie drops the whole header when another cookie holds JSON or spaces
+        for part in self.headers.get("Cookie", "").split(";"):
+            name, _, value = part.strip().partition("=")
+            if name == SESSION_COOKIE:
+                return value
+        return ""
+
     def session(self):
         """Return the valid session of the request, or None. A remembered
         session is checked against LDAP and renewed; the new cookie goes in
         self.renewed_cookie for the response."""
         self.renewed_cookie = None
-        cookie = SimpleCookie(self.headers.get("Cookie", ""))
-        morsel = cookie.get(SESSION_COOKIE)
-        session = read_session(morsel.value if morsel else "")
+        session = read_session(self.session_cookie_value())
         if not session or not session.get("r") or time.time() - session.get("c", 0) < RECHECK_INTERVAL:
             return session
         try:

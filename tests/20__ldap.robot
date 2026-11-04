@@ -39,6 +39,10 @@ Check if a valid user can log in
     ${status} =    Curl launcher    /api/apps
     Should Be Equal    ${status}    200
 
+Check if a foreign JSON cookie keeps the session
+    ${status} =    Curl launcher    /api/apps    -b '__sec_id={"a":1,"b":2}'
+    Should Be Equal    ${status}    200
+
 Check if repeated failures are blocked
     FOR    ${i}    IN RANGE    10
         Login to launcher    alice    wrong-password
