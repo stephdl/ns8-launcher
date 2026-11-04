@@ -40,7 +40,11 @@ Check if a valid user can log in
     Should Be Equal    ${status}    200
 
 Check if a foreign JSON cookie keeps the session
-    ${status} =    Curl launcher    /api/apps    -b '__sec_id={"a":1,"b":2}'
+    # The foreign cookie must come first: that order made SimpleCookie lose the session
+    ${session} =    Execute Command    awk '$6 == "launcher_session" {print $7}' /tmp/launcher.cookies
+    Should Not Be Empty    ${session}
+    ${status} =    Execute Command
+    ...    curl -sk -o /dev/null -w '\%{http_code}' --resolve ${TEST_HOST}:443:127.0.0.1 -H 'Cookie: __sec_id={"a":1,"b":2}; launcher_session=${session}' https://${TEST_HOST}/api/apps
     Should Be Equal    ${status}    200
 
 Check if repeated failures are blocked

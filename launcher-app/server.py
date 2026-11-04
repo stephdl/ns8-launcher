@@ -301,20 +301,24 @@ class Handler(BaseHTTPRequestHandler):
         with open(path, "rb") as fp:
             self.send(HTTPStatus.OK, fp.read(), content_type)
 
-    def session_cookie_value(self):
-        # SimpleCookie drops the whole header when another cookie holds JSON or spaces
-        for part in self.headers.get("Cookie", "").split(";"):
-            name, _, value = part.strip().partition("=")
-            if name == SESSION_COOKIE:
-                return value
-        return ""
+    def cookie_session(self):
+        # SimpleCookie stops at the first cookie it cannot parse, like a JSON value
+        for header in self.headers.get_all("Cookie") or []:
+            for part in header.split(";"):
+                name, _, value = part.strip().partition("=")
+                if name == SESSION_COOKIE:
+                    # A stale duplicate may come first, so try them all
+                    session = read_session(value.strip().strip('"'))
+                    if session:
+                        return session
+        return None
 
     def session(self):
         """Return the valid session of the request, or None. A remembered
         session is checked against LDAP and renewed; the new cookie goes in
         self.renewed_cookie for the response."""
         self.renewed_cookie = None
-        session = read_session(self.session_cookie_value())
+        session = self.cookie_session()
         if not session or not session.get("r") or time.time() - session.get("c", 0) < RECHECK_INTERVAL:
             return session
         try:
