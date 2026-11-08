@@ -20,6 +20,15 @@ import agent
 APPS_FILE = "launcher/apps.json"
 LOGOS_DIR = "launcher/logos"
 SAFE_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,120}$")
+# Routes to these files are not pages a person opens, like the autoconfig XML of ns8-automx
+ASSET_EXTENSIONS = {
+    ".xml", ".json", ".css", ".js", ".mjs", ".map",
+    ".woff", ".woff2", ".ttf", ".ico", ".png", ".jpg", ".gif", ".svg", ".webp",
+}
+
+
+def is_asset(path):
+    return os.path.splitext(path.rsplit("/", 1)[-1])[1].lower() in ASSET_EXTENSIONS
 
 
 def image_name(image_url):
@@ -115,6 +124,7 @@ def main():
                 "url": f"https://{host}{route.get('path', '')}",
                 "logo": fetch_logo(image, package.get("logo") or "") if image else "",
                 "traefik": tid,
+                "default_hidden": is_asset(route.get("path", "")),
             })
 
     apps.sort(key=lambda app: app["name"].lower())

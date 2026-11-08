@@ -104,7 +104,7 @@
   },
   "apps": {
     "title": "Apps",
-    "description": "Every Traefik route with a host name on the cluster is listed here. The list follows route changes on its own; use Refresh to update it now.",
+    "description": "Every Traefik route with a host name on the cluster is listed here. The list follows route changes on its own; use Refresh to update it now. Routes to static files (XML, JSON, CSS, JS, fonts, images) start hidden: use Show to display one.",
     "refresh": "Refresh",
     "search": "Search apps",
     "no_apps": "No application found",

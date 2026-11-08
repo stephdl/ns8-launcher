@@ -104,7 +104,7 @@
     },
     "apps": {
         "title": "App",
-        "description": "Qui sono elencate tutte le route Traefik del cluster con un nome host. L'elenco segue da solo le modifiche delle route; usa Aggiorna per aggiornarlo subito.",
+        "description": "Qui sono elencate tutte le route Traefik del cluster con un nome host. L'elenco segue da solo le modifiche delle route; usa Aggiorna per aggiornarlo subito. Le route verso file statici (XML, JSON, CSS, JS, font, immagini) sono nascoste in partenza: usa Mostra per visualizzarne una.",
         "refresh": "Aggiorna",
         "search": "Cerca app",
         "no_apps": "Nessuna applicazione trovata",
