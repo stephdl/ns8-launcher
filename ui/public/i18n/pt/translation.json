@@ -104,7 +104,7 @@
     },
     "apps": {
         "title": "Aplicações",
-        "description": "Aqui são listadas todas as rotas Traefik do cluster com um nome de anfitrião. A lista acompanha sozinha as alterações das rotas; use Atualizar para a atualizar agora.",
+        "description": "Aqui são listadas todas as rotas Traefik do cluster com um nome de anfitrião. A lista acompanha sozinha as alterações das rotas; use Atualizar para a atualizar agora. As rotas para ficheiros estáticos (XML, JSON, CSS, JS, tipos de letra, imagens) começam ocultas: use Mostrar para exibir uma.",
         "refresh": "Atualizar",
         "search": "Pesquisar aplicações",
         "no_apps": "Nenhuma aplicação encontrada",

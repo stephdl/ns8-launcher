@@ -104,7 +104,7 @@
     },
     "apps": {
         "title": "Aplicativos",
-        "description": "Aqui são listadas todas as rotas Traefik do cluster com um nome de host. A lista acompanha sozinha as mudanças de rotas; use Atualizar para atualizá-la agora.",
+        "description": "Aqui são listadas todas as rotas Traefik do cluster com um nome de host. A lista acompanha sozinha as mudanças de rotas; use Atualizar para atualizá-la agora. As rotas para arquivos estáticos (XML, JSON, CSS, JS, fontes, imagens) começam ocultas: use Mostrar para exibir uma.",
         "refresh": "Atualizar",
         "search": "Pesquisar aplicativos",
         "no_apps": "Nenhum aplicativo encontrado",

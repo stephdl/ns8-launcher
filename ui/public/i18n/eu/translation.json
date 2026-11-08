@@ -104,7 +104,7 @@
     },
     "apps": {
         "title": "Aplikazioak",
-        "description": "Hemen zerrendatzen dira klusterreko ostalari-izena duten Traefik bide guztiak. Zerrendak bideen aldaketak berez jarraitzen ditu; erabili Freskatu orain eguneratzeko.",
+        "description": "Hemen zerrendatzen dira klusterreko ostalari-izena duten Traefik bide guztiak. Zerrendak bideen aldaketak berez jarraitzen ditu; erabili Freskatu orain eguneratzeko. Fitxategi estatikoetarako bideak (XML, JSON, CSS, JS, letra-tipoak, irudiak) ezkutatuta hasten dira: erabili Erakutsi bat bistaratzeko.",
         "refresh": "Freskatu",
         "search": "Bilatu aplikazioak",
         "no_apps": "Ez da aplikaziorik aurkitu",

@@ -104,7 +104,7 @@
   },
   "apps": {
     "title": "Applications",
-    "description": "Toutes les routes Traefik du cluster qui ont un nom d'hôte sont listées ici. La liste suit seule les changements de routes ; Rafraîchir la met à jour tout de suite.",
+    "description": "Toutes les routes Traefik du cluster qui ont un nom d'hôte sont listées ici. La liste suit seule les changements de routes ; Rafraîchir la met à jour tout de suite. Les routes vers des fichiers statiques (XML, JSON, CSS, JS, polices, images) sont masquées par défaut : utilisez Afficher pour en montrer une.",
     "refresh": "Rafraîchir",
     "search": "Rechercher une application",
     "no_apps": "Aucune application trouvée",

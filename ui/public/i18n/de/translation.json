@@ -104,7 +104,7 @@
     },
     "apps": {
         "title": "Apps",
-        "description": "Hier wird jede Traefik-Route des Clusters mit einem Hostnamen aufgelistet. Die Liste folgt Routenänderungen von selbst; mit Aktualisieren wird sie sofort aktualisiert.",
+        "description": "Hier wird jede Traefik-Route des Clusters mit einem Hostnamen aufgelistet. Die Liste folgt Routenänderungen von selbst; mit Aktualisieren wird sie sofort aktualisiert. Routen zu statischen Dateien (XML, JSON, CSS, JS, Schriften, Bilder) sind zunächst ausgeblendet: mit Anzeigen wird eine eingeblendet.",
         "refresh": "Aktualisieren",
         "search": "Apps suchen",
         "no_apps": "Keine Anwendung gefunden",

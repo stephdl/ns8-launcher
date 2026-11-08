@@ -104,7 +104,7 @@
     },
     "apps": {
         "title": "Aplicaciones",
-        "description": "Aquí se listan todas las rutas Traefik del clúster con un nombre de host. La lista sigue los cambios de rutas por sí sola; use Actualizar para refrescarla ahora.",
+        "description": "Aquí se listan todas las rutas Traefik del clúster con un nombre de host. La lista sigue los cambios de rutas por sí sola; use Actualizar para refrescarla ahora. Las rutas a archivos estáticos (XML, JSON, CSS, JS, fuentes, imágenes) empiezan ocultas: use Mostrar para mostrar una.",
         "refresh": "Actualizar",
         "search": "Buscar aplicaciones",
         "no_apps": "No se encontró ninguna aplicación",
