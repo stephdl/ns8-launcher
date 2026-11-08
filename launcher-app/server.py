@@ -226,7 +226,7 @@ def visible_apps(session):
     apps = []
     for app in discovered:
         override = overrides.get(app["id"], {})
-        if override.get("hidden") or not allowed(override.get("groups", [])):
+        if override.get("hidden", app.get("default_hidden", False)) or not allowed(override.get("groups", [])):
             continue
         apps.append({
             "name": override.get("name") or app["name"],

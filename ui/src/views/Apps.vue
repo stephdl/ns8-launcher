@@ -238,7 +238,7 @@ export default {
           name: override.name || app.name,
           category: override.category || "",
           groups: override.groups || [],
-          hidden: !!override.hidden,
+          hidden: "hidden" in override ? override.hidden : !!app.default_hidden,
         };
       });
     },
@@ -333,7 +333,11 @@ export default {
     },
     storeOverride(id, override) {
       const clean = {};
-      if (override.hidden) clean.hidden = true;
+      const app = this.discovered.find((a) => a.id === id) || {};
+      // Saving false matters too: it shows a route that starts hidden
+      if (!!override.hidden !== !!app.default_hidden) {
+        clean.hidden = !!override.hidden;
+      }
       if (override.name) clean.name = override.name;
       if (override.category) clean.category = override.category;
       if (override.groups && override.groups.length) clean.groups = override.groups;

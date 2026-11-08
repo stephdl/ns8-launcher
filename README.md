@@ -57,6 +57,10 @@ cluster and keeps the routes that have a host name. The display name comes
 from the instance label, then from the repository metadata; the logo from the
 repository metadata, cached locally. The result is `state/launcher/apps.json`.
 
+Routes whose path ends with a static file extension (XML, JSON, CSS, JS,
+fonts, images) start hidden, like the autoconfig routes of ns8-automx. They
+stay listed in the Apps page, where the admin can show them.
+
 The list is refreshed:
 
 - on `hosts-changed`, fired by Traefik when the host names of its routes change;

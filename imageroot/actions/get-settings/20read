@@ -26,7 +26,10 @@ json.dump({
     **settings,
     "logo_set": any(os.path.isfile(f"launcher/brand/logo.{ext}") for ext in ("png", "jpg")),
     "discovered": [
-        {key: app.get(key, "") for key in ("id", "module", "name", "host", "url")}
+        {
+            **{key: app.get(key, "") for key in ("id", "module", "name", "host", "url")},
+            "default_hidden": bool(app.get("default_hidden")),
+        }
         for app in discovered.get("apps", [])
     ],
     "updated": discovered.get("updated", 0),
