@@ -14,6 +14,9 @@ images=()
 repobase="${REPOBASE:-ghcr.io/stephdl}"
 # Configure the image name
 reponame="launcher"
+# Node.js 25+ no longer ships Corepack, install it from npm
+# renovate: datasource=npm packageName=corepack
+corepack_version=0.36.0
 
 # Create a new empty container image
 container=$(buildah from scratch)
@@ -21,7 +24,8 @@ container=$(buildah from scratch)
 # Reuse existing nodebuilder-launcher container, to speed up builds
 if ! buildah containers --format "{{.ContainerName}}" | grep -q nodebuilder-launcher; then
     echo "Pulling NodeJS runtime..."
-    buildah from --name nodebuilder-launcher -v "${PWD}:/usr/src:Z" docker.io/library/node:24.22.2
+    buildah from --name nodebuilder-launcher -v "${PWD}:/usr/src:Z" docker.io/library/node:26.13.0-slim
+    buildah run nodebuilder-launcher sh -c "npm install -g corepack@${corepack_version} && corepack enable"
 fi
 
 echo "Build static UI files with node..."
@@ -29,7 +33,7 @@ buildah run \
     --workingdir=/usr/src/ui \
     --env="NODE_OPTIONS=--openssl-legacy-provider" \
     nodebuilder-launcher \
-    sh -c "corepack enable && yarn install && yarn build"
+    sh -c "yarn install && yarn build"
 
 echo "Build the launcher web page image..."
 buildah build --layers --force-rm --tag "${repobase}/launcher-app" launcher-app
